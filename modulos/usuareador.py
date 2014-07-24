@@ -35,6 +35,10 @@ class modelador():
         self.cosId = cosId
 
     def guardar(self, archivo, datos):
+        '''
+        Guarda virtualmente el contenido según el modelador los va encontrando, 
+        colocandolo en el atributo necesario
+        '''
         if archivo == "ldif":
             self.volcado += datos
         if archivo == "fcmd":
@@ -43,33 +47,29 @@ class modelador():
             self.cosid += datos
 
     def __cabecera(self, fcmd, line):
+        '''
+        Inicia el comando cuando self.marcador es encontrado dentro del contenido dado
+        Da una contraseña por defecto Un0.D0s.Tr3s 
+        '''
         usuario = line.split(" ")[2] 
         sentencia = "\n\nzmprov ca {user} Un0.D0s.Tr3s ".format(user=usuario)
         self.guardar(fcmd, sentencia)
         return usuario
 
     def __attrComun(self, fcmd, line):
+        '''
+        Maneja los atributos más comunes que no coinciden con self.atributos, se supone entonces que es una atributo válido
+        que necesitamos usar dentro del comando
+        Convierte atributos:valor en opcion_valor
+        '''
         i = line.find(" ")
         sentencia = line[:i-1] + " '" + line[i+1:].rstrip("\n") + "' "
         self.guardar(fcmd, sentencia)
 
-    def __dneador(self, usuario):
-        l = usuario.split('@')
-        uid = "uid=" + l[0] + "," + "ou=people"
-        base = ",".join(["dc=" + x for x in l[1].split('.')])
-        dn = uid + "," + base
-        return dn
-
-    def __cabecera_especial(self, usuario, line):
-        i = line.find(" ")
-        atributo = line[:i-1]
-        ldif = "ldif"
-        self.guardar(ldif, "\n" + "dn: " + self.__dneador(usuario) + "\n")
-        self.guardar(ldif, "changetype: modify\n")
-        self.guardar(ldif, "modify: " + atributo + "\n")
-        self.guardar(ldif, line)
-
     def __especiales(self, usuario, line):
+        '''
+        Al coincidir con self.especiales, contruye los comandos para volver a configurarlos
+        '''
         i = line.find(" ")
         atributo = line[:i-1]
         valor = line[i+1:]
