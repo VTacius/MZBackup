@@ -3,7 +3,8 @@
 # vim: tabstop=4 : shiftwidth=4 : expandtab
 
 from modulos.cosidear import cos
-from modulos.utilidades import titulador, situar_directorio, situar_remoto, enviante
+from modulos.listado import listar
+from modulos.utilidades import titulador, situar_directorio, situar_remoto, enviante, almacenar_diccionario
 from threading import Semaphore
 
 if __name__ == "__main__":
@@ -15,17 +16,19 @@ if __name__ == "__main__":
     situar_remoto()
     # Acción de listado de COS
     titulador("Listamos COS")
-    id = cos()
-    id.listar_Cos()
+    obtener_cos = listar()
+    obtener_cos.listar_Cos()
     # Definido el número de hilos a usar
     semaforo = Semaphore(4)
     titulador("Empieza los hilos para crear datos")
-    for elemento_cos in id.cos:
+    for elemento_cos in obtener_cos.cos:
         ideador = cos(semaforo, elemento_cos)
         ideador.start()
     ideador.join()
     titulador("Almacenamos los CosId")
-    id.almacenar_Id()
+    almacenar_diccionario(:x
+    :
+    
     # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')

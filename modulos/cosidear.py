@@ -36,14 +36,6 @@ class cos(Thread):
         self.elemento_cos = elemento_cos
         self.fichero = "cos.{ext}".format
 
-    def listar_Cos (self):
-        '''
-        Esta lógica que no requiere multiprocesamiento deberia estar en listado.py
-        '''
-        comando = ['zmprov','-v','gac']
-        self.cos = ejecutar_comando(comando)
-        guardar(self.fichero(ext="lst"), self.cos, "l")
-
     def obtener(self):
         '''
         Obtiene todos los datos relacionados a cada COS
@@ -57,11 +49,11 @@ class cos(Thread):
         '''
         Itera sobre el conjunto de datos de cada COS y modela cada linea que va encontrando gracias a self.__modelado
         '''
-       contenido = str()
-       for linea in datos:
-           contenido += self.__modelado(linea)
-       guardar(self.fichero(ext="cmd"), contenido, "l")
-       self.cosId[self.id] = self.nombre
+        contenido = str()
+        for linea in datos:
+            contenido += self.__modelado(linea)
+        guardar(self.fichero(ext="cmd"), contenido, "l")
+        self.cosId[self.id] = self.nombre
 
     def __modelado(self, contenido):
         '''
@@ -85,11 +77,3 @@ class cos(Thread):
         self.semaforo.release()
         print ("Terminado " + self.elemento_cos + " en " + self.getName())
     
-    def almacenar_Id(self):
-        '''
-        Almacena el diccionario cosId:cos que usaremos en el script usuario.py 
-        para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia 
-        en el nuevo servidor, pero los datos del usuario almacenan el cosId
-        '''
-        datos = json.dumps(self.cosId)
-        guardar(self.fichero(ext="id"), datos)

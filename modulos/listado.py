@@ -20,6 +20,14 @@ class listar ():
     dominios = ()
     usuarios = {}
 	
+    def listar_Cos (self):
+        '''
+        Obtiene todos los COS configurados en el servidor
+        '''
+        comando = ['zmprov','-v','gac']
+        self.cos = ejecutar_comando(comando)
+        guardar("cos.lst", self.cos, "l")
+
     def obtener_dominio (self):
         '''
         Obtiene todos los dominios que el servidor pueda requerir

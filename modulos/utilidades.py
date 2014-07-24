@@ -177,3 +177,13 @@ def borrar_patrones (listador):
             if re.match(patron, j):
                 listador.remove(j)
                 break
+
+
+def almacenar_diccionario(diccionario, fichero):
+    '''
+    Almacena el diccionario cosId:cos que usaremos en el script usuario.py 
+    para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia 
+    en el nuevo servidor, pero los datos del usuario almacenan el cosId
+    '''
+    datos = json.dumps(diccionario)
+    guardar(fichero), datos)
