@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#encoding: utf-8
+# encoding: utf-8
 '''
 Librería que implementa al módulo paramiko para mayor comodidad de las demás aplicaciones
 :author: Alexander Ortiz

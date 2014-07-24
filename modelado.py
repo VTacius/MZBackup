@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#encoding: utf-8
+# encoding: utf-8
 '''
 Librería para formateado de datos de cada usuario en una comando zmprov de creación de usuario
 y entradas ldif para modificar atributos de más de una línea

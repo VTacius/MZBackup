@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#encoding: utf-8
+# encoding: utf-8
 '''
 Librería para listado y obtención de datos de los usuarios almacenados en zimbra por medio de ssh
 :author: Alexander Ortiz

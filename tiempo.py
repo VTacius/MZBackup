@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# encoding: utf-8
 from datetime import * 
 import sys as s
 import re as r
