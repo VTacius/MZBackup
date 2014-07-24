@@ -42,7 +42,7 @@ def ejecutar_comando(comando):
 
 def ejecutar_remoto(comando):
     '''
-    Por ahora, ejecutamos comando remotos con ssh, no queda otro si es que queremos avanzar
+    Por ahora, ejecutamos comando remotos con ssh, no queda otro si es que queremos avanzar por este momento
     '''
     orden = "'" + comando + "'"
     comando = ["ssh", "root@" + remoto, orden]

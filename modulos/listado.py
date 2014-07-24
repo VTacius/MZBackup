@@ -13,42 +13,27 @@ from threading import Thread, Semaphore
 from utilidades import guardar, ejecutar_comando
 
 class listar ():
+    '''
+    Separé estos métodos en esta clase porque no pueden usar multiprocesamiento
+    y son usados por otros script finales
+    '''
     dominios = ()
     usuarios = {}
 	
     def obtener_dominio (self):
+        '''
+        Obtiene todos los dominios que el servidor pueda requerir
+        '''
         comando = [ 'zmprov', 'gad' ]
         self.dominios = ejecutar_comando(comando)
         guardar("dominios.lst", self.dominios, "l")
 
     def obtener_listado (self):
+        '''
+        Obtiene un listado de todos los usuarios de todos los dominios
+        '''
         for dominio in self.dominios:
             comando = ['zmprov', '-l', 'gaa', dominio]
             self.usuarios[dominio] = ejecutar_comando(comando)
             guardar(dominio + ".lst", self.usuarios[dominio], "l")
-
-if __name__ == "__main__":
-    '''
-    Probablemente esta implementación no sirve
-    Y sería muy buena idea que la arreglaras
-    '''
-    semaforo = Semaphore(14)
-    listador = listar()
-    print("Se obtiene la lista de dominios")	
-    listador.obtener_dominio()
-    print("Se obtiene la lista de usuarios por cada dominio")	
-    listador.obtener_listado()
-    # Limpiamos el arreglo de dominio
-    dominios = [x.rstrip("\n") for x in listador.dominios]
-    for dom in dominios:
-        # Limpiamos el arreglo de usuarios
-        print("Limpiando el arreglo de usuarios")	
-        usuarios = [x.rstrip() for x in listador.usuarios[dom]]
-        borrar_usuarios(usuarios,dom)
-        borrador(usuarios)	
-        print("###############################################################################")
-        for usuario in usuarios:
-        # Ejecutado el procedimiento
-            saqueador = obtener(semaforo, usuario, dom)
-            saqueador.start()
 

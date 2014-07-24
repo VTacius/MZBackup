@@ -16,6 +16,12 @@ from subprocess import STDOUT,PIPE, Popen
 from threading import Thread, Semaphore
 
 class cos(Thread):
+    '''
+    Maneja una entrada resultado de `zmprov gc COS`
+    La convierte en una serie de comandos para crear la lista de distribución con todos los usuarios 
+    que tenía en el servidor anterior
+    '''
+
     id = str()
     cos = str()
     cosId = dict()
@@ -31,17 +37,26 @@ class cos(Thread):
         self.fichero = "cos.{ext}".format
 
     def listar_Cos (self):
+        '''
+        Esta lógica que no requiere multiprocesamiento deberia estar en listado.py
+        '''
         comando = ['zmprov','-v','gac']
         self.cos = ejecutar_comando(comando)
         guardar(self.fichero(ext="lst"), self.cos, "l")
 
     def obtener(self):
+        '''
+        Obtiene todos los datos relacionados a cada COS
+        '''
         comando = ['zmprov', 'gc', self.elemento_cos]
         salida = ejecutar_comando(comando)
         self.almacenar(salida)
         guardar(self.fichero(ext="data"), salida, "l")
     
     def almacenar(self, datos):
+        '''
+        Itera sobre el conjunto de datos de cada COS y modela cada linea que va encontrando gracias a self.__modelado
+        '''
        contenido = str()
        for linea in datos:
            contenido += self.__modelado(linea)
@@ -49,6 +64,9 @@ class cos(Thread):
        self.cosId[self.id] = self.nombre
 
     def __modelado(self, contenido):
+        '''
+        Modela cada linea con los datos solicitados
+        '''
         comando = str()
         if re.match(self.marca, contenido):
             self.nombre = contenido.split(" ")[2]
@@ -68,5 +86,10 @@ class cos(Thread):
         print ("Terminado " + self.elemento_cos + " en " + self.getName())
     
     def almacenar_Id(self):
+        '''
+        Almacena el diccionario cosId:cos que usaremos en el script usuario.py 
+        para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia 
+        en el nuevo servidor, pero los datos del usuario almacenan el cosId
+        '''
         datos = json.dumps(self.cosId)
         guardar(self.fichero(ext="id"), datos)

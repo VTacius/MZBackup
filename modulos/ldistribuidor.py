@@ -16,6 +16,12 @@ import time
 from threading import Thread, Semaphore
 
 class distribucion(Thread):
+    '''
+    Maneja una entrada resultado de zmprov gdl `lista@dominio.com`
+    La convierte en una serie de comandos para crear la lista de distribución con todos los usuarios 
+    que tenía en el servidor anterior
+    '''
+    
     listado = ()
     contenido = str()
     marcador  = "^#\sdistributionList"
@@ -28,23 +34,35 @@ class distribucion(Thread):
         self.archivo = "listas_distribucion.{ext}".format
 
     def listar_listas(self):
+        '''
+        Esta lógica que no requiere multiprocesamiento deberia estar en listado.py
+        '''
         comando = ['zmprov', 'gadl']
         self.listado = ejecutar_comando(comando)
         guardar(self.archivo(ext="lst"), self.listado, "l")
 
     def obtener(self, lista):
+        '''
+        Obtiene todos los datos relacionados a cada lista de distribucion 
+        '''
         comando = ['zmprov', 'gdl', lista]
         salida = ejecutar_comando(comando)
         self.almacenar(salida)
         guardar(self.archivo(ext="data"), salida, "l")
 
     def almacenar(self, datos):
+        '''
+        Itera sobre el conjunto de datos de cada lista de distribución y modela cada linea que va encontrando gracias a self.__modelado
+        '''
         contenido = str()
         for linea in datos:
             contenido += self.__modelado(linea)
         guardar(self.archivo(ext="cmd"), contenido, "l")
         
     def __modelado(self, linea):
+        '''
+        Modela cada linea con los datos solicitados
+        '''
         sentencia = str()
         if r.match(self.marcador,linea):
             sentencia = "\n\nzmprov cdl " + linea.split(" ")[2] + " "

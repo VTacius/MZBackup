@@ -62,7 +62,9 @@ class modelador():
 
     def __attrComun(self, fcmd, line):
         '''
-        Maneja los atributos más comunes que no coinciden con self.atributos, se supone entonces que es una atributo válido
+        Maneja los atributos más comunes que no coinciden con self.atributos
+        Como self.atributos son atributos marcados como obsoletos desde versiones anteriores,
+        se supone que cualquier atributo que llegue a esta opción por defecto es un atributo válido
         que necesitamos usar dentro del comando
         Convierte atributos:valor en opcion_valor
         '''

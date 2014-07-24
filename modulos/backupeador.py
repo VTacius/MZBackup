@@ -17,6 +17,10 @@ from threading import Thread, Semaphore
 remoto = "10.10.20.102"
 
 class enviador(Thread):
+    '''
+    Maneja el envío de archivos por medio de scp (En este caso el comando nativo por medio de subprocess)
+    Hereda de Thread para poder ser usado en hilos diferentes a los hilos de backupeador
+    '''
 
     def __init__(self, origen, destino, semaforo):
         '''Traemos a cuenta algunas variables necesarias'''
@@ -32,6 +36,10 @@ class enviador(Thread):
         print (__name__ + " Terminado " + self.origen + " en " + self.getName())
 
 class backupeador(Thread):
+    '''
+    Ejecuta un `zmmailbox -z -m usuario@dominio.com getRestURL -o usuarioATdominio.com.tgz '/?fmt=tgz'`
+    por cada usuario que encuentra dentro del dominio
+    '''
 
     def __init__(self, usuario, semaforo):
         '''Traemos a cuenta algunas variables necesarias'''
@@ -41,7 +49,9 @@ class backupeador(Thread):
         self.usuario = usuario
 	
     def crear_backup(self, user):
-        ''' Creamos el backup en el servidor ''' 
+        ''' 
+        Hacemos un backup para el usuario dado
+        ''' 
         archivo = self.directorio + "/" + user.replace("@","AT") + ".tgz"
         comando ['zmmailbox', '-z', '-m', user, 'getRestURL', '-o', archivo, '/?fmt=tgz']
         ejecutar_comando(comando)
