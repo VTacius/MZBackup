@@ -3,10 +3,4 @@ MZBackup
 
 MZBackup: Migración/Backup de Zimbra con comandos zm* envueltos en python
 
-Titulo de prueba
-=======
-Contenido de prueba
-
-Nuevo titulo de prueba
-======
-Contenido de prueba
+Baśicamente, los script de administración nativos de zimbra envueltos en un poco de código python, al menos lo suficiente para capturar un par de errores y poder correrlos en diferentes procesos
