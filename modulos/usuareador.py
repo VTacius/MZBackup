@@ -16,6 +16,10 @@ from threading import Thread, Semaphore
 from utilidades import ejecutar_comando, guardar
 
 class modelador():
+    '''
+    Maneja una entrada resultado de zmprov -l ga user@dominio.com
+    La convierte en una serie de comandos para dejar al usuario tal como estaba en el servidor anterior
+    '''
     def __init__(self, usuario, cosId):
         # Marca los self.atributos que no deben ser tomados en cuenta
         self.atributos = "^(zimbraMailHost|zimbraMailTransport|zimbraFeatureNotebookEnabled|zimbraPrefCalendarReminderYMessenger|zimbraPrefReadingPaneEnabled|zimbraContactAutoCompleteEmailFields|zimbraPrefCalendarReminderSendEmail|zimbraPrefContactsInitialView|zimbraFeaturePeopleSearchEnabled|zimbraFeatureMailPollingIntervalPreferenceEnabled|zimbraPrefCalendarReminderDuration1|zimbraPrefCalendarReminderMobile|zimbraFeatureAdvancedSearchEnabled|zimbraFeatureWebSearchEnabled|zimbraPrefContactsExpandAppleContactGroups|zimbraPrefContactsDisableAutocompleteOnContactGroupMembers|zimbraFeatureShortcutAliasesEnabled|zimbraIMService|zimbraFeatureImportExportFolderEnabled|mail|zimbraCreateTimestamp|zimbraMailDeliveryAddress|objectClass|uid|userPassword|mail|zimbraId|zimbraMailAlias|zimbraLastLogonTimestamp|zimbraCOSId|$)"
@@ -77,6 +81,10 @@ class modelador():
         self.guardar("ldif", comando)
 
     def __cos_id(self, usuario, line):
+        '''
+        Al coincidir con ^zimbraCOSId:, crea el comando necesario para asignar el COS
+        del usuario en el nuevo servidor
+        '''
         i = line.find(" ") + 1
         cosId = line[i:]
         cos = self.cosId[cosId]
@@ -85,6 +93,11 @@ class modelador():
         
     
     def moldear(self):
+        '''
+        Este es el MÉTODO.
+        Lo encontrará en los otros script como __modelado
+        Este es publico porque la clase modelador es auxiliar para la clase obtener
+        '''
         datos = self.datos
         ldif = "ldif"
         fcmd = "fcmd"
@@ -112,6 +125,10 @@ class modelador():
                 self.indice +=1
 
 class obtener(Thread):
+    '''
+    Se limita a envolver el comando nativo de administración zimbra 'zmprov -l ga usuario@dominio.com'
+    en una clase que hereda de Thread y maneja el uso de hilos
+    '''
     def __init__ (self, semaforo, user, dominio, cosId):
         Thread.__init__(self)
         self.semaforo = semaforo
@@ -120,6 +137,9 @@ class obtener(Thread):
         self.cosId = cosId
 
     def obtener_datos (self, user, dominio):
+        '''
+        Usara modelador para para obtener los datos del usuarios obtenido, y después lo guarda
+        '''
         # Sacas el contenido a una variable
         # usas el guardar_fichero en run
         comando = ['zmprov', '-l', 'ga', user]
@@ -128,6 +148,8 @@ class obtener(Thread):
         # Para esto usamos la clase modelado
         modelo = modelador(salida, self.cosId)
         modelo.moldear()
+        # Modelado los datos, almacenamos fisicamente los atributos 'modelo.comando', modelo.volcado', 'modelo.cosid'
+        # que contiene los comandos para crear/modificar a los usuarios en el nuevo servidor
         guardar(dominio + ".cmd", modelo.comando, "l")
         guardar(dominio + ".ldif", modelo.volcado, "l")
         guardar(dominio + ".cos", modelo.cosid, "z")
