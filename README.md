@@ -7,10 +7,10 @@ MZBackup es un proyecto para la migración/Backup de Zimbra con mediante los com
 * Debe copiar las llaves públicas del servidor que esta por copiar
 ''''bash
     $ ssh-copy-id root@<ip servidor remoto>
-''''sh
+''''
 * Cambie la dirección del servidor backup en modulos/backupeador.py y modulos/utilidades.py
 * El primer script que debe ejecutarse al menos una vez es cos.py, que guardará los cos de los usuarios y ayudará en la tarea de migración de los mismos
-''''
+''''sh
     $ python MZBackup/cos.py
 ''''
 #### Backup / Migración de datos sobre los usuarios
