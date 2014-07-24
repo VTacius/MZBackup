@@ -26,6 +26,6 @@ if __name__ == "__main__":
     ideador.join()
     titulador("Almacenamos los CosId")
     id.almacenar_Id()
-    # Enviamos los ficheros resultantes
+    # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')

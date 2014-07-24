@@ -40,5 +40,6 @@ if __name__ == "__main__":
             saqueador = obtener(semaforo, usuario, dom, cosId)
             saqueador.start()
     saqueador.join()
+    # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')

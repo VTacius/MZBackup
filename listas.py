@@ -21,7 +21,7 @@ if __name__ == "__main__":
         ld = distribucion(semaforo, lista)
         ld.start()
     ld.join()
-    # Enviamos los ficheros resultantes
+    # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')
 

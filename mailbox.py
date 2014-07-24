@@ -33,3 +33,4 @@ if __name__ == "__main__":
         # Ejecutado el procedimiento
             vaca = backupeador(usuario, semaforo)
             vaca.start()
+    # Enviamos los ficheros resultantes al servidor remoto, antes
