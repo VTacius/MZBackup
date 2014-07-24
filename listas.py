@@ -3,7 +3,7 @@
 # vim: tabstop=4 : shiftwidth=4 : expandtab
 
 from modulos.ldistribuidor import distribucion
-from modulos.utilidades import situar_directorio, titulador
+from modulos.utilidades import situar_directorio, titulador, enviante
 from threading import Semaphore
 
 if __name__ == "__main__":
@@ -20,4 +20,8 @@ if __name__ == "__main__":
     for lista in listar.listado:
         ld = distribucion(semaforo, lista)
         ld.start()
+    ld.join()
+    # Enviamos los ficheros resultantes
+    titulador("Enviamos los ficheros resultantes")
+    enviante('*')
 
