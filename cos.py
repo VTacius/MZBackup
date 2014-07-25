@@ -26,9 +26,7 @@ if __name__ == "__main__":
         ideador.start()
     ideador.join()
     titulador("Almacenamos los CosId")
-    almacenar_diccionario(:x
-    :
-    
+    almacenar_diccionario("cos.id", ideador.cosId)
     # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')

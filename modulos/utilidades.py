@@ -2,7 +2,7 @@
 # encoding: utf-8
 # vim: tabstop=4 : shiftwidth=4 : expandtab
 '''
-Funciones útiles de carácter general
+Funciones útiles de carácter general 
 O de caracter especifico que no quise poner en otra parte porque me hacía ver fea las clases que de por si no son tan guapas que digamos
 '''
 __author__ = "Alexander Ortiz"
@@ -179,11 +179,11 @@ def borrar_patrones (listador):
                 break
 
 
-def almacenar_diccionario(diccionario, fichero):
+def almacenar_diccionario(fichero, diccionario):
     '''
     Almacena el diccionario cosId:cos que usaremos en el script usuario.py 
     para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia 
     en el nuevo servidor, pero los datos del usuario almacenan el cosId
     '''
     datos = json.dumps(diccionario)
-    guardar(fichero), datos)
+    guardar(fichero, datos)
