@@ -4,9 +4,12 @@ MZBackup es un proyecto para la migración/Backup de Zimbra con mediante los com
 
 ### Uso:
 #### Antes de su primer uso:
-* Debe copiar las llaves públicas del servidor que esta por copiar `ssh-copy-id root@<ip servidor remoto>`
+* Instalar el módulo `argparse` para python `rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/python-argparse-1.2.1-2.el6.noarch.rpm`
 
-* Cambie la dirección del servidor backup en `modulos/backupeador.py` y `modulos/utilidades.py`
+* Copiar las llaves públicas del servidor que esta por copiar `ssh-copy-id root@<ip servidor remoto>`
+
+* Cambiar la dirección del servidor backup en `modulos/backupeador.py` y `modulos/utilidades.py`
+
 * El primer script que debe ejecutarse al menos una vez es `cos.py`, que guardará los cos de los usuarios y ayudará en la tarea de migración de los mismos `$ python MZBackup/cos.py`
 
 #### Backup / Migración de datos sobre los usuarios
