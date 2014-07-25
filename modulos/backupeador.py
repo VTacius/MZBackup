@@ -14,7 +14,7 @@ from subprocess import Popen,PIPE,STDOUT
 from modulos.utilidades import ejecutar_comando, enviante
 from threading import Thread, Semaphore
 
-remoto = "10.10.20.102"
+remoto = "10.10.20.2"
 
 class enviador(Thread):
     '''
@@ -53,15 +53,16 @@ class backupeador(Thread):
         Hacemos un backup para el usuario dado
         ''' 
         archivo = self.directorio + "/" + user.replace("@","AT") + ".tgz"
-        comando ['zmmailbox', '-z', '-m', user, 'getRestURL', '-o', archivo, '/?fmt=tgz']
+        comando = ['zmmailbox', '-z', '-m', user, 'getRestURL', '-o', archivo, '/?fmt=tgz']
         ejecutar_comando(comando)
         return archivo
 	
     def run (self):
         self.semaforo.acquire()
         backup = self.crear_backup(self.usuario)
-        origen = self.directorio + "/" + backup
-        destino = self.directorio + "/" + backup 
+        # Lo dejamos por acá, quién sabe si después necesitemos especificarlo
+        origen = backup 
+        destino = backup
         # La idea es que una vez creado el fichero, podamos liberar el semaforo para que 
         # continue el envío con otros hilos
         self.semaforo.release()
