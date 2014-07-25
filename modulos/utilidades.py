@@ -16,8 +16,11 @@ import re
 import sys
 import time
 from subprocess import STDOUT,PIPE,Popen
+from configuracion import configuracion
 
-remoto = "10.10.20.2"
+# Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
+# leerá la configuración
+remoto = configuracion("remoto")
 
 def ejecutar_comando(comando):
     '''

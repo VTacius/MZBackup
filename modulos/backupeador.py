@@ -13,8 +13,11 @@ import os
 from subprocess import Popen,PIPE,STDOUT
 from modulos.utilidades import ejecutar_comando, enviante
 from threading import Thread, Semaphore
+from configuracion import configuracion
 
-remoto = "10.10.20.2"
+# Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
+# leerá la configuración
+remoto = configuracion("remoto")
 
 class enviador(Thread):
     '''
