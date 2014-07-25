@@ -1,3 +1,6 @@
+# Ficheros de configuracion del programa
+modulos.mzbackup.ini
+
 # Ficheros temporales de vim
 .*.py.swp
 modulos/.*.py.swp
