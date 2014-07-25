@@ -4,6 +4,12 @@ MZBackup es un proyecto para la migración/Backup de Zimbra con mediante los com
 
 ### Uso:
 #### Antes de su primer uso:
+* Cree el fichero `modulos/mzbackup.ini` para configurar el servidor remoto. Su contenido va de la siguiente forma:
+```ini
+[Global]
+remoto = 10.10.20.2
+```
+
 * Instalar el módulo `argparse` para python `rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/python-argparse-1.2.1-2.el6.noarch.rpm`
 
 * Copiar las llaves públicas del servidor que esta por copiar `ssh-copy-id root@<ip servidor remoto>`
