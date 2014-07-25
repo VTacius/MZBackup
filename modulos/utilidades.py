@@ -17,7 +17,7 @@ import sys
 import time
 from subprocess import STDOUT,PIPE,Popen
 
-remoto = "10.10.20.102"
+remoto = "10.10.20.2"
 
 def ejecutar_comando(comando):
     '''
@@ -48,7 +48,7 @@ def ejecutar_remoto(comando):
     comando = ["ssh", "root@" + remoto, orden]
     ejecutar_comando(comando)
     
-def enviante(origen, destino=os.getcwd()):
+def enviante(origen, destino=str()):
     '''
     Por ahora, enviamos archivos con ssh, no queda de otra si es que queremos avanzar
     El destino es opcional, tomará el directorio actual, comportamiento útil para 
@@ -56,9 +56,13 @@ def enviante(origen, destino=os.getcwd()):
     Por tanto, solo enviará ficheros regulares
     '''
     if origen == "*":
-        archivos = [x for x in os.listdir(os.getcwd()) if os.path.isfile(x)] 
+        # En este caso, usualmente será porque estamos enviando al mismo lugar
+        localidad = os.getcwd()
+        archivos = [x for x in os.listdir(localidad) if os.path.isfile(x)] 
+        # Pero mejor lo probamos que no perdemos mucho
+        destino = destino if len(destino)>0 else localidad
         for archivo in archivos:
-            print("Enviando " + archivo)
+            print("Enviando " + archivo + " hacia " + destino)
             comando = ['scp', archivo, 'root@' + remoto + ':' + destino]
             ejecutar_comando(comando)
     else:
