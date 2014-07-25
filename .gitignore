@@ -1,5 +1,6 @@
 # Ficheros de configuracion del programa
-modulos.mzbackup.ini
+modulos/mzbackup.ini
+prueba/mzbackup.ini
 
 # Ficheros temporales de vim
 .*.py.swp
