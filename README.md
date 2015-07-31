@@ -18,7 +18,7 @@ Los valores a configurar son:
 remoto = 10.30.20.200
 ```
 
-* Configurar autenticación sin contraseña respecto al servidor remoto: Copie las llaves públicas d servidor del que va a realizar backup al que va a recibir el backup:
+* Configurar autenticación sin contraseña respecto al servidor remoto: Copie las llaves públicas d servidor del que va a realizar backup al que va a recibir el backup: 
     $ ssh-copy-id root@<ip servidor remoto> 
 
 * Cambiar la dirección del servidor backup en `modulos/backupeador.py` y `modulos/utilidades.py`
