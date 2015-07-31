@@ -7,7 +7,6 @@ MZBackup es un proyecto para la migraciónn/Backup de Zimbra con mediante los co
 * Sitúese en el servidor del que quiere realizar backup
 
 * Si se encuentra en CentOS 6, será necesario instalar el módulo `argparse` para python 
-
     $ rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/python-argparse-1.2.1-2.el6.noarch.rpm
 
 * Cree el fichero `modulos/mzbackup.ini` para configurar la aplicación.
