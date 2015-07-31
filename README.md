@@ -12,15 +12,14 @@ MZBackup es un proyecto para la migraciónn/Backup de Zimbra con mediante los co
 
 * Cree el fichero `modulos/mzbackup.ini` para configurar la aplicación.
 Los valores a configurar son:
-** `remoto`: servidor que ha de recibir el backup
+ * `remoto`: servidor que ha de recibir el backup
 
 ```ini
 [Global]
-remoto = 10.10.20.2
+remoto = 10.30.20.200
 ```
 
 * Configurar autenticación sin contraseña respecto al servidor remoto: Copie las llaves públicas d servidor del que va a realizar backup al que va a recibir el backup:
-
     $ ssh-copy-id root@<ip servidor remoto> 
 
 * Cambiar la dirección del servidor backup en `modulos/backupeador.py` y `modulos/utilidades.py`
