@@ -12,10 +12,13 @@ __status__ = "Production"
 
 import ConfigParser
 import sys
+import os
 
 # Leyendo del archivo de configuracion
 parser = ConfigParser.SafeConfigParser()
-fichero = "modulos/mzbackup.ini"
+base = os.getcwd()
+fichero = base + "/mzbackup.ini"
+print(fichero)
 seccion = 'Global'
 
 def configuracion(clave):

@@ -12,16 +12,20 @@ if __name__ == "__main__":
     # Creo el directorio donde guardo los ficheros y se muevo a el
     titulador("Creado el directorio de trabajo")
     situar_directorio("mailbox")
+    
     # Creamos directorio remoto donde almacenar los fichero
     titulador("Creamos el directorio remoto para enviar los datos")
     situar_remoto()
+    
     # Se obtiene la lista de dominios
     titulador("Obtenemos la lista de dominios")
     listador = listar()
     listador.obtener_dominio()
+    
     # Se obtiene la lista de usuarios por cada dominio
     titulador("Obtenemos la lista de usuarios por cada dominio")
     listador.obtener_listado()
+    
     # Definido el número de hilos a usar
     semaforo = Semaphore(28)
     titulador("Empieza los hilos para crear datos")
@@ -33,4 +37,3 @@ if __name__ == "__main__":
         # Ejecutado el procedimiento
             vaca = backupeador(usuario, semaforo)
             vaca.start()
-    # Enviamos los ficheros resultantes al servidor remoto, antes

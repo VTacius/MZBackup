@@ -15,19 +15,24 @@ if __name__ == "__main__":
     args = parser.parse_args()
     cos_file = args.cos
     cosId = abrir_json(cos_file)
+
     # Creo el directorio donde guardo los ficheros
     titulador("Creado el directorio de trabajo")
     situar_directorio("usuarios")
+    
     ##  Creamos directorio remoto donde almacenar los fichero
     titulador("Creamos el directorio remoto para enviar los datos")
     situar_remoto()
+    
     # Se obtiene la lista de dominios
     titulador("Obtenemos la lista de dominios")
     listador = listar()
     listador.obtener_dominio()
+    
     # Se obtiene la lista de usuarios por cada dominio
     titulador("Obtenemos la lista de usuarios por cada dominio")
     listador.obtener_listado()
+    
     # Definido el número de hilos a usar
     semaforo = Semaphore(35)
     titulador("Empieza los hilos para crear datos")
@@ -40,6 +45,7 @@ if __name__ == "__main__":
             saqueador = obtener(semaforo, usuario, dom, cosId)
             saqueador.start()
     saqueador.join()
+    
     # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')
