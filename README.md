@@ -35,10 +35,15 @@ s_mailbox = 28
 s_cos = 4
 ```
 
-* Configurar autenticación sin contraseña respecto al servidor remoto: Copie las llaves públicas d servidor del que va a realizar backup al que va a recibir el backup: 
+* Configurar autenticación sin contraseña respecto al servidor remoto: Como usuario zimbra, copie las llaves públicas del servidor del al que va a realizar backup al que va a recibir el backup: 
+También puede usar otro usuario, si es que la idea de usar root le molesta. Por un lado, las operaciones de restauración de backup se realizarán en el servidor destino de backup, por lo que en realidad no necesita tener control del usuario root de dicho equipo
+```bash
+su - zimbra
+ssh-keygen -t rsa -b 4096 -C correo@dominio.com
+ssh-copy-id root@<ip servidor remoto> 
 ```
-$ ssh-copy-id root@<ip servidor remoto> 
-```
+* Todos los script se ejecutan como usuario zimbra
+
 * El primer script que debe ejecutarse al menos una vez es `cos.py`, que guardará los cos de los usuarios y ayudará en la tarea de migración de los mismos `$ python MZBackup/cos.py`
 
 #### Backup / Migración de datos sobre los usuarios

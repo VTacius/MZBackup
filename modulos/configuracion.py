@@ -18,17 +18,22 @@ import os
 parser = ConfigParser.SafeConfigParser()
 base = os.getcwd()
 fichero = base + "/mzbackup.ini"
-print(fichero)
 seccion = 'Global'
 
 def configuracion(clave):
     '''
     Leer de un fichero .ini algunas variables propias del usuario
     '''
+    # Revisamos que el fichero exista
+    if not os.path.isfile(fichero):
+        print('El fichero de configuración mzbackup.ini no existe')
+        sys.exit()
+    
+    # Retornamos tal parametros si es que es posible parsear el fichero
     parser.read(fichero)
     secciones = parser.sections()
     if len(secciones)>0:
         return parser.get(seccion,clave)
     else:
-        print "Problemas con el fichero mzbackup.ini"
+        print "Revise la estructura del fichero mzbackup.ini"
         sys.exit()
