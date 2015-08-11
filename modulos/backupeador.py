@@ -17,7 +17,8 @@ from configuracion import configuracion
 
 # Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
 # leerá la configuración
-remoto = configuracion("remoto")
+remoto = configuracion('remoto')
+s_backupeador = int(configuracion('s_backupeador'))
 
 class enviador(Thread):
     '''
@@ -70,6 +71,6 @@ class backupeador(Thread):
         # continue el envío con otros hilos
         self.semaforo.release()
         # Acá empieza el envío propiamente dicho
-        semaforo = Semaphore(2)
+        semaforo = Semaphore(s_backupeador)
         enviante = enviador(origen, destino, semaforo)
         enviante.start()

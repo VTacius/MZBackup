@@ -4,6 +4,7 @@
 
 from modulos.ldistribuidor import distribucion
 from modulos.utilidades import situar_directorio, titulador, enviante
+from modulos.configuracion import configuracion
 from threading import Semaphore
 
 if __name__ == "__main__":

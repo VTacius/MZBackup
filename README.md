@@ -7,17 +7,32 @@ MZBackup es un proyecto para la migraciónn/Backup de Zimbra con mediante los co
 * Sitúese en el servidor del que quiere realizar backup
 
 * Si se encuentra en CentOS 6, será necesario instalar el módulo `argparse` para python 
-```
+```bash
 $ rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/i386/python-argparse-1.2.1-2.el6.noarch.rpm
 ```
 
 * Cree el fichero `mzbackup.ini` para configurar la aplicación.
 Los valores a configurar son:
- * `remoto`: servidor que ha de recibir el backup
+ * `remoto`: Servidor que ha de recibir el backup
+ * `dir_base`: Directorio base donde la aplicación realiza todas las operaciones. Cuide de crearlos manualmente en ambos servidores
+```bash
+mkdir /opt/backup
+chmod 750 /opt/backup/
+chown zimbra:root /opt/backup/
+```
+ * `s_backupeador`: Número de hilos para enviar mediante red los archivos de backup
+ * `s_usuarios`: Hilos en los que se obtiene y formatea información de los usuarios. Más allá de los 35 no se nota una mejoría significativa en el tiempo empleado
+ * `s_mailbox`: Cantidad de hilos que implica el trabajo en paralelo que. Más allá de los 28 no se nota mejoría en el tiempo empleado
+ * `s_cos`: Números de hilos en los que se obtiene y formatea información de COS (Class of Service). No creo que un número alto sea necesario, entre otras cosas porque usualmente nunca son muchos. (Usualmente, claro)
 
 ```ini
 [Global]
 remoto = 10.30.20.200
+dir_base = /opt/backup
+s_backupeador = 2
+s_usuarios = 35
+s_mailbox = 28 
+s_cos = 4
 ```
 
 * Configurar autenticación sin contraseña respecto al servidor remoto: Copie las llaves públicas d servidor del que va a realizar backup al que va a recibir el backup: 

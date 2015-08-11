@@ -27,7 +27,7 @@ class distribucion(Thread):
     marcador  = "^#\sdistributionList"
     atributos = "^(cn|description|displayName|zimbraMailForwardingAddress|zimbraNotes|zimbraPrefReply):" 
 
-    def __init__(self, semaforo=Semaphore(1), lista=str() ):
+    def __init__(self, semaforo=Semaphore(5), lista=str() ):
         Thread.__init__(self)
         self.semaforo = semaforo
         self.lista = lista

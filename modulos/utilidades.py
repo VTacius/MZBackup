@@ -21,6 +21,7 @@ from configuracion import configuracion
 # Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
 # leerá la configuración
 remoto = configuracion("remoto")
+dir_base = configuracion("dir_base")
 
 def ejecutar_comando(comando):
     '''
@@ -89,12 +90,13 @@ def situar_remoto():
     comando = "'/bin/mkdir " + directorio + "'"
     ejecutar_remoto(comando)
 
-def situar_directorio(objeto, dirbase = "/opt/backup"):
+def situar_directorio(objeto, dirbase = ""):
     '''
     Crear un directorio local para el objeto dado, incluye una marca de tiempo. 
     Mueve las operaciones del script al directorio creado
     '''
     timestamp = time.strftime('%d-%m-%y-%H%M%S')
+    dirbase = dir_base if not dirbase else dirbase 
     directorio = dirbase.rstrip("/") + "/" + objeto + "-" + timestamp
     try:
         os.mkdir(directorio)

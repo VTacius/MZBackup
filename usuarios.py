@@ -5,8 +5,12 @@
 from modulos.listado import listar
 from modulos.usuareador import obtener
 from modulos.utilidades import titulador, situar_directorio, abrir_json, borrar_usuarios, borrar_patrones, situar_remoto, enviante
+from modulos.configuracion import configuracion
 from threading import Semaphore
 import argparse
+
+# Obtenemos valores de configuración para la aplicación desde mzbackup.ini
+s_usuarios = int(configuracion("s_usuarios"))
 
 if __name__ == "__main__":
     # Definimos como argumento -c con fichero cos.id
@@ -16,8 +20,8 @@ if __name__ == "__main__":
     cos_file = args.cos
     cosId = abrir_json(cos_file)
 
-    # Creo el directorio donde guardo los ficheros
-    titulador("Creado el directorio de trabajo")
+    # Me situo en el directorio base de trabajo configurado en mzbackup.ini
+    titulador("Empezamos operaciones situándonos en el directorio base")
     situar_directorio("usuarios")
     
     ##  Creamos directorio remoto donde almacenar los fichero
@@ -33,8 +37,8 @@ if __name__ == "__main__":
     titulador("Obtenemos la lista de usuarios por cada dominio")
     listador.obtener_listado()
     
-    # Definido el número de hilos a usar
-    semaforo = Semaphore(35)
+    # Definido el número de hilos a usar según la configuración de la clave s_usuario en mzbackup.ini
+    semaforo = Semaphore(s_usuarios)
     titulador("Empieza los hilos para crear datos")
     for dom in listador.dominios:
         # Limpiamos el arreglo de usuarios

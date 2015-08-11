@@ -9,7 +9,6 @@ __version__ = "0.8"
 __email__ = "alortiz@salud.gob.sv"
 __status__ = "Production"
 
-from threading import Thread, Semaphore
 from utilidades import guardar, ejecutar_comando
 
 class listar ():

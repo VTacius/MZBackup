@@ -3,14 +3,18 @@
 # vim: tabstop=4 : shiftwidth=4 : expandtab
 
 from modulos.backupeador import backupeador
+from modulos.configuracion import configuracion
 from modulos.listado import listar
 from modulos.utilidades import situar_directorio, titulador, borrar_usuarios, borrar_patrones, ejecutar_comando, situar_remoto
 from threading import Semaphore
 import os
 
+# Obtenemos valores de configuración para la aplicación desde mzbackup.ini
+s_mailbox = int(configuracion("s_mailbox"))
+
 if __name__ == "__main__":
-    # Creo el directorio donde guardo los ficheros y se muevo a el
-    titulador("Creado el directorio de trabajo")
+    # Me situo en el directorio base de trabajo configurado en mzbackup.ini
+    titulador("Empezamos operaciones situándonos en el directorio base")
     situar_directorio("mailbox")
     
     # Creamos directorio remoto donde almacenar los fichero
@@ -27,7 +31,7 @@ if __name__ == "__main__":
     listador.obtener_listado()
     
     # Definido el número de hilos a usar
-    semaforo = Semaphore(28)
+    semaforo = Semaphore(s_mailbox)
     titulador("Empieza los hilos para crear datos")
     for dom in listador.dominios:
         # Limpiamos el arreglo de usuarios
