@@ -80,10 +80,11 @@ class modelador():
         '''
         Al coincidir con self.especiales, contruye los comandos para volver a configurarlos
         '''
+        print(line)
         i = line.find(" ")
         atributo = line[:i-1]
         valor = line[i+1:]
-        comando = "zmprov ma " + usuario + " "+ atributo + " '" + valor
+        comando = "zmprov ma {0} {1} '{2}\n".format(usuario, atributo, valor)
         self.guardar("ldif", comando)
 
     def __cos_id(self, usuario, line):

@@ -6,6 +6,10 @@ import argparse
 
 import sys
 
+# TODO: Hasta podrías trabajarlo de tal forma que si no se le proporciona archivo como parametro, 
+# usa por defecto el más nuevo en que pueda encontrar en el directorio dir_base, y entonces si no lo encuentro
+# ya luego avisa que necesita que se cree el fichero
+
 if "__main__" == __name__:
     parser = argparse.ArgumentParser(description='Lista de usuarios para un dominio dado')
     parser.add_argument('-l','--listado', help='Fichero con la lista de usuarios para un dominio dado', required=True)
@@ -20,11 +24,9 @@ if "__main__" == __name__:
     dict_cos = abrir_json(archivo_dict_cos)
     
     for user in lista_usuarios:
-        print(user.strip())
         comando = ['zmprov', '-l', 'ga', user.strip()]
         salida = ejecutar_comando(comando)
         modelo = modelador(salida, dict_cos)
         modelo.moldear()
-        print (modelo.cosid)
         print (modelo.volcado)
 
