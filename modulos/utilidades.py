@@ -146,7 +146,7 @@ def abrir_json(archivo):
     y retorna un diccionario con su contenido
     '''
     try:
-        with open(archivo) as json_fichero:
+        with open(archivo, 'r') as json_fichero:
             diccionario = json.load(json_fichero)
     except IOError as e:
         print "IO: " + str(e)

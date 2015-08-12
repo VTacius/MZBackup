@@ -18,7 +18,6 @@ import os
 parser = ConfigParser.SafeConfigParser()
 base = os.getcwd()
 fichero = base + "/mzbackup.ini"
-print(fichero)
 seccion = 'Global'
 
 def configuracion(clave):

@@ -21,12 +21,16 @@ class modelador():
     La convierte en una serie de comandos para dejar al usuario tal como estaba en el servidor anterior
     '''
     def __init__(self, usuario, cosId):
-        # Marca los self.atributos que no deben ser tomados en cuenta
-        self.atributos = "^(zimbraMailHost|zimbraMailTransport|zimbraFeatureNotebookEnabled|zimbraPrefCalendarReminderYMessenger|zimbraPrefReadingPaneEnabled|zimbraContactAutoCompleteEmailFields|zimbraPrefCalendarReminderSendEmail|zimbraPrefContactsInitialView|zimbraFeaturePeopleSearchEnabled|zimbraFeatureMailPollingIntervalPreferenceEnabled|zimbraPrefCalendarReminderDuration1|zimbraPrefCalendarReminderMobile|zimbraFeatureAdvancedSearchEnabled|zimbraFeatureWebSearchEnabled|zimbraPrefContactsExpandAppleContactGroups|zimbraPrefContactsDisableAutocompleteOnContactGroupMembers|zimbraFeatureShortcutAliasesEnabled|zimbraIMService|zimbraFeatureImportExportFolderEnabled|mail|zimbraCreateTimestamp|zimbraMailDeliveryAddress|objectClass|uid|userPassword|mail|zimbraId|zimbraMailAlias|zimbraLastLogonTimestamp|zimbraCOSId|$)"
+        # Marca los self.atributos que no deben ser tomados en cuenta porque se consideran obsoletos
+        self.atributos = r.compile('^(zimbraMailHost|zimbraMailTransport|zimbraFeatureNotebookEnabled|zimbraPrefCalendarReminderYMessenger|zimbraPrefReadingPaneEnabled|zimbraContactAutoCompleteEmailFields|zimbraPrefCalendarReminderSendEmail|zimbraPrefContactsInitialView|zimbraFeaturePeopleSearchEnabled|zimbraFeatureMailPollingIntervalPreferenceEnabled|zimbraPrefCalendarReminderDuration1|zimbraPrefCalendarReminderMobile|zimbraFeatureAdvancedSearchEnabled|zimbraFeatureWebSearchEnabled|zimbraPrefContactsExpandAppleContactGroups|zimbraPrefContactsDisableAutocompleteOnContactGroupMembers|zimbraFeatureShortcutAliasesEnabled|zimbraIMService|zimbraFeatureImportExportFolderEnabled|mail|zimbraCreateTimestamp|zimbraMailDeliveryAddress|objectClass|uid|userPassword|mail|zimbraId|zimbraMailAlias|zimbraLastLogonTimestamp|zimbraCOSId|$)')
         # Marca el inicio de línea  
-        self.marcador  = "^#\sname"
+        self.marcador  = r.compile('^#\sname')
+        # Marca todos los atributos zimbra, util para salir del ciclo que los atributos en self.especiales empiezan
+        self.marcador_atributo = r.compile('^zimbra[a-zA-Z]+:\s\w+')
+        # Marca el atributo zimbraCOSId, con el que se hacen operaciones específicas
+        self.marcador_cos = r.compile('^zimbraCOSId:')
         # Atributos cuyos valores tienen más de una línea
-        self.especiales = "^(zimbraMailSieveScript|zimbraPrefMailSignature|zimbraPrefMailSignatureHTML):"
+        self.especiales = r.compile('^(zimbraMailSieveScript|zimbraPrefMailSignature|zimbraPrefMailSignatureHTML):')
         # Bandera que marca la localización de un valor especial
         self.especial = False
         # Atributos para almacenar los resultados de la iteracion
@@ -104,23 +108,25 @@ class modelador():
         ldif = "ldif"
         fcmd = "fcmd"
         while self.indice < self.attr:
-            if r.match(self.marcador,datos[self.indice]):
+            if self.marcador.match(datos[self.indice]):
                 usuario = self.__cabecera(fcmd, datos[self.indice])
                 self.indice +=1
             elif self.especial:
-                while not r.match("^zimbra[a-zA-Z]+:\s\w+", datos[self.indice]):
-                    self.guardar(ldif, "  " + datos[self.indice] + "\n")
+                # TODO: Si el siguiente atributo a uno de los especiales es por ejemplo uno posix, se incluira dentro del valor del atributo especial
+                while not self.marcador_atributo.match(datos[self.indice]):
+                    self.guardar(ldif, datos[self.indice] + "\n")
                     self.indice +=1
                 self.guardar(ldif, "'\n\n")
                 self.especial = False
-            elif r.match(self.especiales, datos[self.indice]):
+            elif self.especiales.match(datos[self.indice]):
+                print(datos[self.indice])
                 self.especial = True
                 self.__especiales(usuario, datos[self.indice])
                 self.indice +=1
-            elif r.match('^zimbraCOSId:', datos[self.indice]):
+            elif self.marcador_cos.match(datos[self.indice]):
                 self.__cos_id(usuario,  datos[self.indice])
                 self.indice +=1
-            elif not r.match(self.atributos, datos[self.indice]):
+            elif not self.atributos.match(datos[self.indice]):
                 self.__attrComun(fcmd, datos[self.indice])
                 self.indice +=1
             else:
