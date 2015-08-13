@@ -34,7 +34,6 @@ s_usuarios = 35
 s_mailbox = 28 
 s_cos = 4
 ```
-
 * Configurar autenticación sin contraseña respecto al servidor remoto: Como usuario zimbra, copie las llaves públicas del servidor del al que va a realizar backup al que va a recibir el backup: 
 También puede usar otro usuario, si es que la idea de usar root le molesta. Por un lado, las operaciones de restauración de backup se realizarán en el servidor destino de backup, por lo que en realidad no necesita tener control del usuario root de dicho equipo
 ```bash
