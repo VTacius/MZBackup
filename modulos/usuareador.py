@@ -80,7 +80,6 @@ class modelador():
         '''
         Al coincidir con self.especiales, contruye los comandos para volver a configurarlos
         '''
-        print(line)
         i = line.find(" ")
         atributo = line[:i-1]
         valor = line[i+1:]
@@ -120,7 +119,6 @@ class modelador():
                 self.guardar(ldif, "'\n\n")
                 self.especial = False
             elif self.especiales.match(datos[self.indice]):
-                print(datos[self.indice])
                 self.especial = True
                 self.__especiales(usuario, datos[self.indice])
                 self.indice +=1

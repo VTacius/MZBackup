@@ -52,6 +52,7 @@ chown zimbra:root /opt/backup/
 * `s_backupeador`: Número de hilos para enviar mediante red los archivos de backup
 * `s_usuarios`: Hilos en los que se obtiene y formatea información de los usuarios. Más allá de los 35 no se nota una mejoría significativa en el tiempo empleado
 * `s_mailbox`: Cantidad de hilos que implica el trabajo en paralelo que. Más allá de los 28 no se nota mejoría en el tiempo empleado
+* `s_listas`: Número de hilos para obtener y modelar información sobre listas de distribución y los usuarios que pertenecen a ellas
 * `s_cos`: Números de hilos en los que se obtiene y formatea información de COS (Class of Service). No creo que un número alto sea necesario, entre otras cosas porque usualmente nunca son muchos. (Usualmente, claro)
 * El fichero de configuración queda de la siguiente forma:
 ```ini
@@ -61,6 +62,7 @@ dir_base = /opt/backup
 s_backupeador = 2
 s_usuarios = 35
 s_mailbox = 28 
+s_listas = 14
 s_cos = 4
 ```
 
