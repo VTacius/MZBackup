@@ -7,6 +7,8 @@ from modulos.utilidades import situar_directorio, titulador, enviante
 from modulos.configuracion import configuracion
 from threading import Semaphore
 
+s_listas = configuracion('s_listas')
+
 if __name__ == "__main__":
     # Creo el directorio donde guardo los ficheros
     titulador("Creado el directorio de trabajo")
@@ -16,7 +18,7 @@ if __name__ == "__main__":
     listar = distribucion()
     listar.listar_listas()
     # Definido el número de hilos a usar
-    semaforo = Semaphore(14)
+    semaforo = Semaphore(s_listas)
     titulador("Empieza los hilos para crear datos")
     for lista in listar.listado:
         ld = distribucion(semaforo, lista)
