@@ -31,24 +31,22 @@ if __name__ == "__main__":
     # Se obtiene la lista de dominios
     titulador("Obtenemos la lista de dominios")
     listador = listar()
-    listador.obtener_dominio()
+    listador.listar_dominios().almacenar()
     
     # Se obtiene la lista de usuarios por cada dominio
     titulador("Obtenemos la lista de usuarios por cada dominio")
-    listador.obtener_listado()
+    listador.listar_usuarios().almacenar()
     
     # Definido el número de hilos a usar según la configuración de la clave s_usuario en mzbackup.ini
     semaforo = Semaphore(s_usuarios)
-    titulador("Empieza los hilos para crear datos")
+
     # Recorremos el listado de dominios que se almacena en el atributo dominios de la clase listar()
-    for dom in listador.dominios:
-        # Limpiamos el arreglo de usuarios de usuarios de los que no usaremos backup
-        borrar_usuarios(listador.usuarios[dom], dom)
-        borrar_patrones(listador.usuarios[dom])	
+    titulador("Empieza los hilos para crear datos")
+    for dominio, lista_usuarios in listador.usuarios.iteritems():
         # Recorremos el diccionario del atributo usuarios, por cada indice dominio devuelve una lista de usuarios
-        for usuario in listador.usuarios[dom]:
+        for usuario in lista_usuarios:
             # Ejecutado el procedimiento
-            saqueador = obtener(semaforo, usuario, dom, cosId)
+            saqueador = obtener(semaforo, usuario, dominio, cosId)
             saqueador.start()
     saqueador.join()
     

@@ -111,7 +111,10 @@ def situar_directorio(objeto, dirbase = ""):
 def cadeneador(contenido, sep):
     '''
     Si el contenido no es una cadena, lo convierte en una
-    Usa el separador especificado en sep
+    Usa el separador especificado en sep:
+    c: (comando) Separador es espacio
+    l: (linea) Separador es un salto de línea
+    z: ({{empty}}) No hay separación por defecto del contenido
     '''
     if sep == "c":
         final = " "
@@ -119,13 +122,13 @@ def cadeneador(contenido, sep):
         final = "\n"
     else:
         final = ""
+    
+    # Si el contenido no es cadena de texto, casi siempre será una lista que habrá que transformar tomando en cuenta
+    # el separador final que se ha configurado en final
     if isinstance(contenido, str):
         cadena = contenido
     else:
-        cadena = str()
-        for x in contenido:
-            entrada = x + final
-            cadena += entrada 
+        cadena = final.join(contenido)
     return cadena
 
 def guardar(archivo, contenido, separador = "z"):
@@ -136,9 +139,27 @@ def guardar(archivo, contenido, separador = "z"):
     Soy el primero en reconocer que esta opción va demasiado lenta, cuesta un par de minutos (No una docena, pero si un par de minutos)
     '''
     fichero = os.open(archivo, os.O_RDWR|os.O_APPEND|os.O_CREAT)
-    # Usamos la función cadeneador antes definida
+    # Usamos la función cadeneador para formatear el contenido, enviamos param separador para que la función sepa como separar
+    # contenido en caso que sea una lista
     os.write(fichero, cadeneador(contenido, separador))
     os.close(fichero)
+
+def abrir_listado(fichero):
+    '''
+    Abre un fichero con listados y devuelve cada línea como elementos de una lista
+    '''
+    lista = []
+    try:
+        with open(fichero,'r') as listado:
+            for elemento in listado:
+                lista.append(elemento.strip())
+        return lista
+    except IOError as e:
+        print "IO: " + str(e)
+        sys.exit(1)
+    except OSError as e:
+        print "OS: " + str(e)
+        sys.exit(1)
 
 def abrir_json(archivo):
     '''

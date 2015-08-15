@@ -24,8 +24,8 @@ class distribucion(Thread):
     
     listado = ()
     contenido = str()
-    marcador  = "^#\sdistributionList"
-    atributos = "^(cn|description|displayName|zimbraMailForwardingAddress|zimbraNotes|zimbraPrefReply):" 
+    marcador  = r.compile('^#\sdistributionList')
+    atributos = r.compile('^(cn|description|displayName|zimbraMailForwardingAddress|zimbraNotes|zimbraPrefReply):'
 
     def __init__(self, semaforo=Semaphore(5), lista=str() ):
         Thread.__init__(self)
@@ -64,9 +64,9 @@ class distribucion(Thread):
         Modela cada linea con los datos solicitados
         '''
         sentencia = str()
-        if r.match(self.marcador,linea):
+        if self.marcador.match(linea):
             sentencia = "\n\nzmprov cdl " + linea.split(" ")[2] + " "
-        elif r.match(self.atributos,linea):
+        elif self.atributos.match(linea):
             i = linea.find(" ")
             sentencia = linea[:i-1] + " \"" + linea[i+1:].rstrip("\n") + "\" "
         return sentencia

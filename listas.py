@@ -7,7 +7,7 @@ from modulos.utilidades import situar_directorio, titulador, enviante
 from modulos.configuracion import configuracion
 from threading import Semaphore
 
-s_listas = configuracion('s_listas')
+s_listas = int(configuracion('s_listas'))
 
 if __name__ == "__main__":
     # Creo el directorio donde guardo los ficheros

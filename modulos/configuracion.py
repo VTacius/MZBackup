@@ -33,7 +33,11 @@ def configuracion(clave):
     parser.read(fichero)
     secciones = parser.sections()
     if len(secciones)>0:
-        return parser.get(seccion,clave)
+        try:
+            return parser.get(seccion,clave)
+        except ConfigParser.NoOptionError as No:
+            print("ConfigParser: " + str(No))
+            sys.exit()
     else:
         print "Revise la estructura del fichero mzbackup.ini"
         sys.exit()
