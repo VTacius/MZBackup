@@ -155,7 +155,7 @@ class obtener(Thread):
         # Para esto usamos la clase modelado
         modelo = modelador(salida, self.cosId)
         modelo.moldear()
-        # Modelado los datos, almacenamos fisicamente los atributos 'modelo.comando', modelo.volcado', 'modelo.cosid'
+        # Modelados los datos, almacenamos fisicamente los atributos 'modelo.comando', modelo.volcado', 'modelo.cosid'
         # que contiene los comandos para crear/modificar a los usuarios en el nuevo servidor
         guardar(dominio + ".cmd", modelo.comando, "l")
         guardar(dominio + ".ldif", modelo.volcado, "l")
@@ -167,48 +167,3 @@ class obtener(Thread):
         self.semaforo.release()
         print ("Terminado " + self.user + " en " + self.getName())
 
-if __name__ == "__main__":
-    '''
-    Probablemente esta implementación no sirve
-    Y sería muy buena idea que la arreglaras
-    '''
-    if not len(s.argv)>1:
-        print "Falta el fichero con los datos en bruto de los usuarios"
-        s.exit(1)
-    
-    entrada = s.argv[1]
-    salida = entrada.replace("data","cmd")
-    especial = entrada.replace("data","ldif")
-    # Abrimos el fichero de salida con cuidado
-    try:
-        ## Si lo abres en la función, que significa una apertura por pasada,
-        ## se vuelve increíblemente lento
-        fcmd  = open(salida, "w")
-        ldif  = open(especial, "w")
-        datos = open(entrada, "r")
-    except IOError as error:
-        print error
-        s.exit(1)
-    '''
-Las siguientes líneas tienen por objeto obtener una entrada completa de cada usuario. 
-Se toma en cuenta el inicio del tipo '# name ... ' para marcar cada nueva entrada
-Supongo que existe mejores formas
-        '''
-    a = ""
-    user = ""
-    for line in datos:
-        if r.match("^#\sname", line):
-            user_line = line.split(" ")[2].rstrip('\n')
-            datos = a.split("\n")
-            moldear(ldif, fcmd, datos)
-            if not user_line == user:
-                a = line
-                user = user_line
-            else:
-                a += line
-        else:
-            a += line
-  # Obligamos a que formatee al último usuario en un archivo
-  # Por la forma en que lo estamos iterando
-    datos = a.split("\n")
-    moldear(ldif, fcmd, datos)
