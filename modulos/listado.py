@@ -24,6 +24,7 @@ class listar ():
         self.contenido = object()
         self.dominios = object()
         self.usuarios = object()
+        self.cos = object()
         self.re_verifica_usuarios_sistema = re.compile('(admin|spam|ham|quarantine|virus-quarantine|galsync)(\..+)*@(\w+\.*){3}')
 
     def listar_cos (self):
@@ -32,6 +33,7 @@ class listar ():
         '''
         comando = ['zmprov','-v','gac']
         self.contenido = ejecutar_comando(comando)
+        self.cos = self.contenido
         self.nombre_fichero = 'cos.lst'
         return self
 

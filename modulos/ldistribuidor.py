@@ -25,13 +25,13 @@ class distribucion(Thread):
     listado = ()
     contenido = str()
     marcador  = r.compile('^#\sdistributionList')
-    atributos = r.compile('^(cn|description|displayName|zimbraMailForwardingAddress|zimbraNotes|zimbraPrefReply):'
+    atributos = r.compile('^(cn|description|displayName|zimbraMailForwardingAddress|zimbraNotes|zimbraPrefReply):')
 
-    def __init__(self, semaforo=Semaphore(5), lista=str() ):
+    def __init__(self, semaforo=Semaphore(5), lista=str()):
         Thread.__init__(self)
+        self.archivo = "listas_distribucion.{ext}".format
         self.semaforo = semaforo
         self.lista = lista
-        self.archivo = "listas_distribucion.{ext}".format
 
     def listar_listas(self):
         '''

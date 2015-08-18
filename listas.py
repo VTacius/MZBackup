@@ -16,10 +16,12 @@ if __name__ == "__main__":
     # Creo el directorio donde guardo los ficheros
     titulador("Creado el directorio de trabajo")
     situar_directorio("listas")
+    
     # Acción de listado de listas de distribucion
     titulador("Listamos listas de distribución")
     listar = distribucion()
     listar.listar_listas()
+    
     # Definido el número de hilos a usar
     semaforo = Semaphore(s_listas)
     titulador("Empieza los hilos para crear datos")
@@ -27,6 +29,7 @@ if __name__ == "__main__":
         ld = distribucion(semaforo, lista)
         ld.start()
     ld.join()
+    
     # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')

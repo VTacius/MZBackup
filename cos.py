@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Acción de listado de COS
     titulador("Listamos COS")
     obtener_cos = listar()
-    obtener_cos.listar_Cos()
+    obtener_cos.listar_cos()
 
     # Definido el número de hilos a usar
     semaforo = Semaphore(s_cos)
@@ -32,9 +32,11 @@ if __name__ == "__main__":
         ideador = cos(semaforo, elemento_cos)
         ideador.start()
     ideador.join()
+
+    # Guardamos un fichero json con los cos que después hemos de usar con los usuarios
     titulador("Almacenamos los CosId")
     almacenar_diccionario("cos.id", ideador.cosId)
 
     # Enviamos los ficheros resultantes al servidor remoto
-    titulador("Enviamos los ficheros resultantes")
+    titulador("Enviamos los ficheros resultantes al servidor remoto")
     enviante('*')
