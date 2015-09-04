@@ -4,7 +4,7 @@
 
 from modulos.listado import listar
 from modulos.usuareador import obtener
-from modulos.utilidades import titulador, situar_directorio, abrir_json, borrar_usuarios, borrar_patrones, situar_remoto, enviante
+from modulos.utilidades import titulador, situar_directorio, abrir_json, situar_remoto, enviante
 from modulos.configuracion import configuracion
 from threading import Semaphore
 import argparse

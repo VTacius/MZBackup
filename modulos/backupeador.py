@@ -5,72 +5,75 @@
 Clase backupeador y enviador para creación de backup del mailbox
 '''
 __author__ = "Alexander Ortiz"
-__version__ = "0.9"
+__version__ = "1.0"
 __email__ = "alortiz@salud.gob.sv"
 __status__ = "Production"
 
 import os
-from subprocess import Popen,PIPE,STDOUT
-from modulos.utilidades import ejecutar_comando, enviante
+from Queue import Queue
 from threading import Thread, Semaphore
-from configuracion import configuracion
+from modulos.utilidades import ejecutar_comando, enviante, situar_directorio, situar_remoto, titulador
+ 
+import argparse
+import sys
+from modulos.utilidades import abrir_listado
 
-# Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
-# leerá la configuración
-remoto = configuracion('remoto')
-s_backupeador = int(configuracion('s_backupeador'))
-
-class enviador(Thread):
-    '''
-    Maneja el envío de archivos por medio de scp (En este caso el comando nativo por medio de subprocess)
-    Hereda de Thread para poder ser usado en hilos diferentes a los hilos de backupeador
-    '''
-
-    def __init__(self, origen, destino, semaforo):
-        '''Traemos a cuenta algunas variables necesarias'''
+########################################################################
+class Enviante(Thread):
+    """Threaded File Downloader"""
+ 
+    #----------------------------------------------------------------------
+    def __init__(self, semaforo,  cola):
         Thread.__init__(self)
-        self.origen = origen
-        self.destino = destino
+        self.cola = cola
         self.semaforo = semaforo
+ 
+    #----------------------------------------------------------------------
+    def run(self):
+        while True:
+            self.semaforo.acquire() 
+            # gets the url from the queue
+            backup = self.cola.get()
+            print "Enviando " + backup
+ 
+            # download the file
+            enviante(backup, backup)
+ 
+            # send a signal to the queue that the job is done
+            self.cola.task_done()
+            self.semaforo.release()
+
+            print "Finalizado envío para " + backup
+ 
+########################################################################
+class Respaldante(Thread):
+    """Creo el respaldo del usuario"""
+
+    #----------------------------------------------------------------------
+    def __init__(self, semaforo, cola, usuario):
+        Thread.__init__(self)
+        self.semaforo = semaforo
+        self.cola = cola
+        self.usuario = usuario
+        self.directorio = os.getcwd()
     
+    #----------------------------------------------------------------------
     def run(self):
         self.semaforo.acquire()
-        enviante(self.origen, self.destino)
+        print "Creo respaldo para " + self.usuario
+        backup = self.crear_backup(self.usuario)
+        self.cola.put(backup)
+        print "Terminado backup para " + self.usuario
         self.semaforo.release()
-        print (__name__ + " Terminado " + self.origen + " en " + self.getName())
-
-class backupeador(Thread):
-    '''
-    Ejecuta un `zmmailbox -z -m usuario@dominio.com getRestURL -o usuarioATdominio.com.tgz '/?fmt=tgz'`
-    por cada usuario que encuentra dentro del dominio
-    '''
-
-    def __init__(self, usuario, semaforo):
-        '''Traemos a cuenta algunas variables necesarias'''
-        Thread.__init__(self)
-        self.semaforo = semaforo
-        self.directorio = os.getcwd()
-        self.usuario = usuario
-	
+    
+    #----------------------------------------------------------------------
     def crear_backup(self, user):
         ''' 
         Hacemos un backup para el usuario dado
         ''' 
-        archivo = self.directorio + "/" + user.replace("@","AT") + ".tgz"
+        archivo = "{0}/{1}.tgz".format(self.directorio, user.replace("@","AT"))
         comando = ['zmmailbox', '-z', '-m', user, 'getRestURL', '-o', archivo, '/?fmt=tgz']
         ejecutar_comando(comando)
         return archivo
-	
-    def run (self):
-        self.semaforo.acquire()
-        backup = self.crear_backup(self.usuario)
-        # Lo dejamos por acá, quién sabe si después necesitemos especificarlo
-        origen = backup 
-        destino = backup
-        # La idea es que una vez creado el fichero, podamos liberar el semaforo para que 
-        # continue el envío con otros hilos
-        self.semaforo.release()
-        # Acá empieza el envío propiamente dicho
-        semaforo = Semaphore(s_backupeador)
-        enviante = enviador(origen, destino, semaforo)
-        enviante.start()
+
+

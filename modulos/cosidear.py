@@ -22,21 +22,24 @@ class cos(Thread):
     que tenía en el servidor anterior
     '''
 
-    id = str()
-    cos = str()
-    cosId = dict()
-    nombre = str()
-    # Configuramos 
-    marca = "^#\sname"
-    atributos = "^(zimbraFeatureNotebookEnabled|zimbraPrefCalendarReminderYMessenger|zimbraPrefReadingPaneEnabled|zimbraContactAutoCompleteEmailFields|zimbraPrefCalendarReminderSendEmail|zimbraPrefContactsInitialView|zimbraFeaturePeopleSearchEnabled|zimbraFeatureMailPollingIntervalPreferenceEnabled|zimbraPrefCalendarReminderDuration1|zimbraPrefCalendarReminderMobile|zimbraProxyCacheableContentTypes|zimbraFeatureAdvancedSearchEnabled|zimbraFeatureWebSearchEnabled|zimbraPrefContactsExpandAppleContactGroups|zimbraPrefContactsDisableAutocompleteOnContactGroupMembers|zimbraFeatureShortcutAliasesEnabled|zimbraIMService|zimbraFeatureImportExportFolderEnabled|zimbraMailHostPool|zimbraCreateTimestamp|$)"
     
     def __init__(self, semaforo = Semaphore(5), elemento_cos = str()):
+        # Iniciamos los valores que hemos de llenar
+        self.id = str()
+        self.cos = str()
+        self.cosId = dict()
+        self.nombre = str()
+        # Compilamos las expresiones regulares a usar
+        self.marca = re.compile('^#\sname')
+        self.zimbraId = re.compile('^zimbraId:')
+        self.atributos = re.compile('^(zimbraFeatureNotebookEnabled|zimbraPrefCalendarReminderYMessenger|zimbraPrefReadingPaneEnabled|zimbraContactAutoCompleteEmailFields|zimbraPrefCalendarReminderSendEmail|zimbraPrefContactsInitialView|zimbraFeaturePeopleSearchEnabled|zimbraFeatureMailPollingIntervalPreferenceEnabled|zimbraPrefCalendarReminderDuration1|zimbraPrefCalendarReminderMobile|zimbraProxyCacheableContentTypes|zimbraFeatureAdvancedSearchEnabled|zimbraFeatureWebSearchEnabled|zimbraPrefContactsExpandAppleContactGroups|zimbraPrefContactsDisableAutocompleteOnContactGroupMembers|zimbraFeatureShortcutAliasesEnabled|zimbraIMService|zimbraFeatureImportExportFolderEnabled|zimbraMailHostPool|zimbraCreateTimestamp|$)')
+
         Thread.__init__(self)
         self.semaforo = semaforo
         self.elemento_cos = elemento_cos
         self.fichero = "cos.{ext}".format
 
-    def obtener(self):
+    def obtener_datos(self):
         '''
         Obtiene todos los datos relacionados a cada COS
         '''
@@ -60,12 +63,12 @@ class cos(Thread):
         Modela cada linea con los datos solicitados
         '''
         comando = str()
-        if re.match(self.marca, contenido):
+        if self.marca.match(contenido):
             self.nombre = contenido.split(" ")[2]
             comando = "\nzmprov cc " + self.nombre + " "
-        elif re.match("^zimbraId:", contenido):
+        elif self.marca.match(contenido):
             self.id = contenido.split(" ")[1]
-        elif not re.match(self.atributos, contenido):
+        elif not self.atributos.match(contenido):
             j = contenido.find(":")
             attr = contenido[:j] + ' "' + contenido[j+2:] + '" '
             comando += attr
@@ -73,7 +76,7 @@ class cos(Thread):
 
     def run(self):
         self.semaforo.acquire()
-        self.obtener()
+        self.obtener_datos()
         self.semaforo.release()
         print ("Terminado " + self.elemento_cos + " en " + self.getName())
     

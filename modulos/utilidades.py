@@ -181,18 +181,18 @@ def abrir_json(archivo):
     return diccionario
 
 
-def borrar_usuarios (lista, dominio):
-    '''
-    Borrar los usuarios enumerado en la lista a de una lista dada
-    y rompe el bucle al encontrarlo, pues en realidad solo hay uno de estos
-    '''
-    a = ['admin','galsync','spam']
-    for e in a:
-        cuenta = e + "@" + dominio	
-        try:
-            lista.remove(cuenta)
-        except ValueError:
-            pass
+#def borrar_usuarios (lista, dominio):
+#    '''
+#    Borrar los usuarios enumerado en la lista a de una lista dada
+#    y rompe el bucle al encontrarlo, pues en realidad solo hay uno de estos
+#    '''
+#    a = ['admin','galsync','spam']
+#    for e in a:
+#        cuenta = e + "@" + dominio	
+#        try:
+#            lista.remove(cuenta)
+#        except ValueError:
+#            pass
 	
 def borrar_patrones (listador):
     '''
