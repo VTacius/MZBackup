@@ -10,8 +10,6 @@ from modulos.configuracion import configuracion
 
 s_listas = int(configuracion("s_listas"))
 
-s_listas = int(configuracion('s_listas'))
-
 if __name__ == "__main__":
     # Creo el directorio donde guardo los ficheros
     titulador("Creado el directorio de trabajo")
@@ -33,4 +31,3 @@ if __name__ == "__main__":
     # Enviamos los ficheros resultantes al servidor remoto
     titulador("Enviamos los ficheros resultantes")
     enviante('*')
-
