@@ -35,15 +35,17 @@ if __name__ == "__main__":
     situar_directorio("mailbox")
     
     # Creamos directorio remoto donde almacenar los fichero
-    titulador("Creamos el directorio remoto para enviar los datos")
-    situar_remoto()
+    if ejecutar_envio:
+        titulador("Creamos el directorio remoto para enviar los datos")
+        situar_remoto()
 
     # Sinceramente creo que de otras partes de este proyecto se agradecería tener esta funcionalidad en un métodos exportable
+    # Declaramos una matriz que cuyo claves serán dominios y el contenido serán listas de usuarios
     matriz_usuarios = {}
     if listado_usuarios:
-        titulador("Obtenemos la lista de dominios")
+        titulador("Obtenemos la lista de usuarios")
         lista_usuarios = abrir_listado(listado_usuarios)
-        titulador("Obtenemos la lista de usuarios por cada dominio")
+        titulador("Obtenemos backup de cada usuario")
         for correo in lista_usuarios:
             dominio = correo.split('@')[1]
             if not dominio in matriz_usuarios:
