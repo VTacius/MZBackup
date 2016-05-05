@@ -16,7 +16,11 @@ if __name__ == "__main__":
     # Definimos como argumento -c con fichero cos.id
     parser = argparse.ArgumentParser(description='Backup de la definición de usuarios en Zimbra')
     parser.add_argument('-c','--cos', help='Fichero JSON (cos.id)que contiene Cos:CosId',required=True)
+    parser.add_argument('-e', '--envio', action='store_true', help='Envio de ficheros .cos al servidor remoto')
+    
+    # Tomamos las opciones que fueron pasadas como argumentos al fichero
     args = parser.parse_args()
+    ejecutar_envio = args.envio
     cos_file = args.cos
     cosId = abrir_json(cos_file)
 
@@ -25,8 +29,9 @@ if __name__ == "__main__":
     situar_directorio("usuarios")
     
     ##  Creamos directorio remoto donde almacenar los fichero
-    titulador("Creamos el directorio remoto para enviar los datos")
-    situar_remoto()
+    if ejecutar_envio:
+        titulador("Creamos el directorio remoto para enviar los datos")
+        situar_remoto()
     
     # Se obtiene la lista de dominios
     titulador("Obtenemos la lista de dominios")
@@ -51,5 +56,6 @@ if __name__ == "__main__":
     saqueador.join()
     
     # Enviamos los ficheros resultantes al servidor remoto
-    titulador("Enviamos los ficheros resultantes")
-    enviante('*')
+    if ejecutar_envio:
+        titulador("Enviamos los ficheros resultantes")
+        enviante('*')

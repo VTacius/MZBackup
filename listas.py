@@ -7,13 +7,27 @@ from modulos.utilidades import situar_directorio, titulador, enviante
 from modulos.configuracion import configuracion
 from threading import Semaphore
 from modulos.configuracion import configuracion
+import argparse
 
 s_listas = int(configuracion("s_listas"))
 
 if __name__ == "__main__":
+    # Definimos que el envío sea opcional de ficheros a un lugar remoto sea opcional
+    parser = argparse.ArgumentParser(description='Backup de la definición de Listas de Distribución  en Zimbra')
+    parser.add_argument('-e', '--envio', action='store_true', help='Envio de ficheros .cos al servidor remoto')
+
+    # Tomamos las opciones pasadas al fichero
+    args = parser.parse_args()
+    ejecutar_envio = args.envio
+    
     # Creo el directorio donde guardo los ficheros
-    titulador("Creado el directorio de trabajo")
+    titulador("Empezamos operaciones situándonos en el directorio base")
     situar_directorio("listas")
+    
+    ##  Creamos directorio remoto donde almacenar los fichero
+    if ejecutar_envio:
+        titulador("Creamos el directorio remoto para enviar los datos")
+        situar_remoto()
     
     # Acción de listado de listas de distribucion
     titulador("Listamos listas de distribución")
@@ -29,5 +43,6 @@ if __name__ == "__main__":
     ld.join()
     
     # Enviamos los ficheros resultantes al servidor remoto
-    titulador("Enviamos los ficheros resultantes")
-    enviante('*')
+    if ejecutar_envio:
+        titulador("Enviamos los ficheros resultantes")
+        enviante('*')
