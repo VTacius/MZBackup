@@ -1,6 +1,5 @@
-## MZBackup: Migración y Backup de Zimbra
-
-MZBackup es un proyecto para la migraciónn/Backup de Zimbra con mediante los comandos nativos de administración de zimbra (zm*), envueltos en python al menos lo suficiente para capturar un par de errores y correr grandes listas en diferentes hilos.
+## MZBackup: Migración y Backup de Zimbra 
+MZBackup es un proyecto para la migraciónn/Backup de Zimbra con mediante los comandos nativos de administración de zimbra (zm), envueltos en python al menos lo suficiente para capturar un par de errores y correr grandes listas en diferentes hilos.
 
 ### Uso:
 #### Antes de su primer uso:
@@ -77,6 +76,10 @@ s_cos = 4
 Es totalmente necesaria la opción `--cos` para asociar el ficheros cos.id más reciente
 
     $ python MZBackup/usuarios.py -c /opt/backup/cos-24-07-14-093319/cos.id
+
+Puede usarse una lista de usuarios sobre los cuales realizar el backup de definición. Incluso pueden pertenecer a varios dominios
+
+    $ python MZBackup/usuarios.py -c /opt/backup/cos-24-07-14-093319/cos.id -l /opt/backup/backup-retirados/lista-11072016.lst 
 
 #### Backup / Migración de datos de listas de distribución
 
