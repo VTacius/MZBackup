@@ -65,22 +65,22 @@ s_cos = 4
 * Todos los script se ejecutan como usuario zimbra
 
 * El primer script que debe ejecutarse al menos una vez es `cos.py`, que guardará los COS configurados en el servidor, y ayudará otros script a hacer la correspondencia entre COS-id y COS
- 
-    $ python MZBackup/cos.py
-
+```bash 
+$ python MZBackup/cos.py
+```
 * Por defecto, el backup para todos los módulos se realiza de forma local en el servidor. Si además de ello se requiere enviar al servidor remoto, usar la opción `--envio` que esta presente para todos los módulos
-
-    $ python MZBackup/cos.py --envio
-
+```bash
+$ python MZBackup/cos.py --envio
+```
 #### Backup / Migración de datos sobre los usuarios
 Es totalmente necesaria la opción `--cos` para asociar el ficheros cos.id más reciente
-
+```bash
     $ python MZBackup/usuarios.py -c /opt/backup/cos-24-07-14-093319/cos.id
-
+```
 Puede usarse una lista de usuarios sobre los cuales realizar el backup de definición. Incluso pueden pertenecer a varios dominios
-
+```bash
     $ python MZBackup/usuarios.py -c /opt/backup/cos-24-07-14-093319/cos.id -l /opt/backup/backup-retirados/lista-11072016.lst 
-
+```
 #### Backup / Migración de datos de listas de distribución
 
     $ python MZBackup/listas.py
@@ -88,3 +88,21 @@ Puede usarse una lista de usuarios sobre los cuales realizar el backup de defini
 #### Backup / Migración de Buzones
  
     $ python MZBackup/mailbox.py
+
+### Desarrollo
+#### Instalacion
+```sh
+python setup install
+```
+
+#### Linting
+```sh
+pylama
+```
+
+#### Testing
+Llamando a pytest como módulo agrega el actual path al SYSPATH (La cosa más genial del mundo si me lo preguntan)
+```sh
+python -m pytest -v tests/
+```
+

@@ -2,6 +2,7 @@
 *mzbackup.ini
 # Ficheros que puedan resultar al realizar pruebas rápidas
 *.lst
+*.cnt
 
 # Ficheros temporales de vim
 .*.py.swp
