@@ -7,7 +7,6 @@ log = configurar_log(verbosidad=4)
 
 
 class Recolector(TestCase):
-
     def test_es_primera_linea(self):
         from MZBackup.parseros.listas import RecolectorListas
         recolector = RecolectorListas({}, {})
@@ -52,34 +51,13 @@ class Recolector(TestCase):
         self.assertFalse(recolector.fin_de_contenido)
 
 
-atributos = {
-    'posix': [],
-    'sistema': [],
-    'procesal': [],
-    'deprecated': [],
-    'multilinea': []
-}
-
-
-class MetodosParsero(TestCase):
+class MetodosAuxiliaresParsero(TestCase):
 
     def test_titulador(self):
         from MZBackup.parseros.listas import ParserLista
-        parser = ParserLista("", atributos)
+        parser = ParserLista({})
         titulo = parser._titulador("# distributionList lista@dominio.com memberCount=6")
         self.assertEqual(titulo, "zmprov gdl lista@dominio.com")
-
-    def test_valuar_con_espacio(self):
-        from MZBackup.parseros.listas import ParserLista
-        parser = ParserLista("", atributos)
-        resultado = parser._valuar("Este es mi contenido")
-        self.assertEqual(resultado, "'Este es mi contenido'")
-
-    def test_valuar_con_caracter(self):
-        from MZBackup.parseros.listas import ParserLista
-        parser = ParserLista("", atributos)
-        resultado = parser._valuar("E$ta")
-        self.assertEqual(resultado, "'E$ta'")
 
 
 class Parsero(TestCase):
@@ -96,9 +74,8 @@ class Parsero(TestCase):
 
     def test_parsear_contenido(self):
         from MZBackup.parseros.listas import ParserLista
-        from MZBackup.parseros.listas import atributosListas
+        from MZBackup.parseros.listas import atributos
 
-        parser = ParserLista(self.contenido, atributosListas)
-        parser.procesar()
-        resultado = parser.guardar()
-        self.assertEqual(resultado, self.respuesta)
+        parser = ParserLista(atributos)
+        resultado = parser.procesar(self.contenido)
+        self.assertEqual(resultado['comando'], self.respuesta)
