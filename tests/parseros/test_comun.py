@@ -3,7 +3,7 @@ from unittest import skip
 
 from MZBackup.utils.registro import configurar_log
 
-log = configurar_log(verbosidad=4)
+log = configurar_log(verbosidad=0)
 
 
 class Parser(TestCase):

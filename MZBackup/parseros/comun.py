@@ -27,7 +27,7 @@ class Recolector:
         self.fin_de_contenido = True
 
         parser = self.parser(self.attrs)
-        print(parser.procesar(self.contenido)['comando'][:50])
+        print(parser.procesar(self.contenido)['comando'])
 
     def agregar(self, linea: str):
 

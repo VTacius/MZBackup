@@ -6,6 +6,7 @@ install_requires = []
 dev_packages = {
     'dev': [
         'pytest',
+        'pytest-cov'
     ]
 }
 

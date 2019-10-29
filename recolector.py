@@ -11,12 +11,14 @@ log = configurar_log(verbosidad=1)
 
 if __name__ == '__main__':
     parser = ArgumentParser(description="Migración/Backup de Usuarios y Cuentas en Zimbra")
-    parser.add_argument('objeto', choices=['usuarios', 'listas'])
+    parser.add_argument('objeto', choices=['cos', 'listas', 'usuarios'])
     parser.add_argument('--fichero', '-f', type=FileType('r'), required=True)
 
     args = parser.parse_args()
     archivo = args.fichero
     objeto = args.objeto
+
+    recolector = object()
 
     if objeto == 'cos':
         recolector = RecolectorCos(ParserCos, cos_attrs)

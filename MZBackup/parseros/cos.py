@@ -15,7 +15,7 @@ atributos = {'posix': ['cn', 'description'],
 class RecolectorCos(Recolector):
     def _es_primera_linea(self, linea: str):
         if linea and linea.startswith("# name "):
-            return len(linea.split(' ')) == 3 and linea.split(' ')[2].find(' ', 0) > -1
+            return len(linea.split(' ')) == 3 and linea.split(' ')[2].find(' ', 0) == -1
 
     def _es_ultima_linea(self, linea: str):
         return linea == ''

@@ -7,6 +7,7 @@ log = configurar_log(verbosidad=4)
 
 
 class Recolector(TestCase):
+
     def test_es_primera_linea(self):
         from MZBackup.parseros.listas import RecolectorListas
         recolector = RecolectorListas({}, {})
@@ -51,31 +52,30 @@ class Recolector(TestCase):
         self.assertFalse(recolector.fin_de_contenido)
 
 
-class MetodosAuxiliaresParsero(TestCase):
-
-    def test_titulador(self):
-        from MZBackup.parseros.listas import ParserLista
-        parser = ParserLista({})
-        titulo = parser._titulador("# distributionList lista@dominio.com memberCount=6")
-        self.assertEqual(titulo, "zmprov gdl lista@dominio.com")
-
-
-class Parsero(TestCase):
+class RecolectorFuncional(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        archivo = open("data/lista.data")
+        archivo = open('data/lista/plural.data')
         cls.contenido = archivo.readlines()
         archivo.close()
 
-        archivo = open("data/lista.cmd")
-        cls.respuesta = archivo.read().rstrip()
-        archivo.close()
+    @mock.patch('MZBackup.parseros.listas.ParserLista')
+    def test_lista_correctamente(self, parsermock):
+        parser = parsermock
+        parser.return_value.guardar.return_value = "contenido"
 
-    def test_parsear_contenido(self):
-        from MZBackup.parseros.listas import ParserLista
-        from MZBackup.parseros.listas import atributos
+        from MZBackup.parseros.listas import RecolectorListas
+        recolector = RecolectorListas(parser, {})
 
-        parser = ParserLista(atributos)
-        resultado = parser.procesar(self.contenido)
-        self.assertEqual(resultado['comando'], self.respuesta)
+        total = 0
+        for linea in self.contenido:
+            recolector.agregar(linea)
+            if recolector.fin_de_contenido:
+                total += 1
+        else:
+            recolector.ultima_linea()
+            if recolector.fin_de_contenido:
+                total += 1
+
+        self.assertEqual(5, total)

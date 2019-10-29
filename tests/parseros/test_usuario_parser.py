@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from MZBackup.utils.registro import configurar_log
 
-log = configurar_log(verbosidad=4)
+log = configurar_log(verbosidad=0)
 
 
 class MetodosAuxiliaresParsero(TestCase):
@@ -18,11 +18,11 @@ class Parsero(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        archivo = open("data/usuario.data")
+        archivo = open("data/usuario/singular.data")
         cls.contenido = archivo.readlines()
         archivo.close()
 
-        archivo = open("data/usuario.cmd")
+        archivo = open("data/usuario/singular.cmd")
         cls.respuesta = archivo.read().rstrip()
         archivo.close()
 

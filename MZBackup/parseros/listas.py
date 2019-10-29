@@ -36,5 +36,5 @@ class ParserLista(Parser):
     def _titulador(self, contenido):
         # TODO: Si no funciona, podrías tirar una Excepción para contenido inválido
         contenido = contenido.split(" ")
-        resultado = f"zmprov gdl {contenido[2]}"
+        resultado = f"zmprov cdl {contenido[2]}"
         return resultado
