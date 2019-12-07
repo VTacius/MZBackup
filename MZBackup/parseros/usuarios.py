@@ -42,6 +42,7 @@ class ParserUsuario(Parser):
     def _titulador(self, linea):
         contenido = linea.split(' ')
         usuario = contenido[2]
+        self.usuario = contenido[2]
         password = 'P@ssw0rd'
         return f'zmprov ca {usuario.strip()} {password}'
 

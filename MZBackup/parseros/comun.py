@@ -3,6 +3,17 @@ from string import ascii_lowercase
 
 log = getLogger('MZBackup')
 
+def almacenar(fichero, contenido):
+    with open(fichero, 'a') as archivo:
+        archivo.write("\n\n")
+        archivo.write(contenido)
+
+def guardar(usuario, contenido):
+    if 'multilinea' in contenido:
+        for k, v in contenido['multilinea'].items():
+            almacenar(k + ".cmd", f'zmprov ma {usuario} {k} {v}')
+    
+    almacenar('usuario.cmd', contenido['comando'])
 
 class Recolector:
 
@@ -27,7 +38,9 @@ class Recolector:
         self.fin_de_contenido = True
 
         parser = self.parser(self.attrs)
-        print(parser.procesar(self.contenido)['comando'])
+        contenido = parser.procesar(self.contenido) 
+        username = parser.usuario
+        guardar(username, contenido)
 
     def agregar(self, linea: str):
 
@@ -42,7 +55,9 @@ class Recolector:
             self.fin_de_contenido = True
 
             parser = self.parser(self.attrs)
-            print(parser.procesar(self.contenido)['comando'][:50])
+            contenido = parser.procesar(self.contenido) 
+            username = parser.usuario
+            guardar(username, contenido)
         else:
             self.contenido.append(self.__linea_actual)
 
@@ -50,6 +65,7 @@ class Recolector:
 class Parser:
 
     def __init__(self, atributos):
+        self.usuario = ""
         self.attr = atributos
 
     def obtener_tipo(self, linea, multilinea):
@@ -87,7 +103,7 @@ class Parser:
     def _crear_contenido_multilinea(self, tokens, linea):
         sep = tokens['sep']
         clave = tokens['mlatributo']
-        valor = linea[sep + 2:]
+        valor = linea[sep + 2:] + " \\\n"
 
         return clave, valor
 
@@ -106,7 +122,7 @@ class Parser:
             self._procesar(tokens, linea)
         elif en_multilinea:
             clave = tokens['mlatributo']
-            contenido['multilinea'][clave] += linea
+            contenido['multilinea'][clave] += linea + " \\\n"
         else:
             if clave != 'SISTEMA':
                 log.debug(f'Contenido sin procesar > {linea.strip()}')
