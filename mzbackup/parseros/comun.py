@@ -8,16 +8,20 @@ def almacenar(fichero, contenido):
         archivo.write("\n\n")
         archivo.write(contenido)
 
-def guardar(usuario, contenido):
+
+def guardar(config_destino, usuario, contenido):
     if 'multilinea' in contenido:
         for k, v in contenido['multilinea'].items():
-            almacenar(k + ".cmd", f'zmprov ma {usuario} {k} {v}')
+            fichero = "{0}{1}.cmd".format(config_destino['directorio'], k)
+            ingreso = "zmprov ma {0} {1} {2}".format(usuario, k, v) 
+            almacenar(fichero, ingreso)
     
-    almacenar('usuario.cmd', contenido['comando'])
+    fichero = "{0}/{1}.cmd".format(config_destino['directorio'], config_destino['fichero'])
+    almacenar(fichero, contenido['comando'])
 
 class Recolector:
 
-    def __init__(self, parser, attrs):
+    def __init__(self, config_destino, parser, attrs):
         self.__linea_actual = None
         self.__linea_siguiente = None
 
@@ -26,11 +30,12 @@ class Recolector:
 
         self.parser = parser
         self.attrs = attrs
+        self.config_destino = config_destino
 
     def _es_primera_linea(self, linea):
         pass
 
-    def _es_ultima_linea(self, linea: str):
+    def _es_ultima_linea(self, linea):
         pass
 
     def ultima_linea(self):
@@ -40,9 +45,9 @@ class Recolector:
         parser = self.parser(self.attrs)
         contenido = parser.procesar(self.contenido) 
         username = parser.usuario
-        guardar(username, contenido)
+        guardar(self.config_destino, username, contenido)
 
-    def agregar(self, linea: str):
+    def agregar(self, linea):
 
         self.__linea_actual, self.__linea_siguiente = self.__linea_siguiente, linea.rstrip()
 
@@ -57,7 +62,7 @@ class Recolector:
             parser = self.parser(self.attrs)
             contenido = parser.procesar(self.contenido) 
             username = parser.usuario
-            guardar(username, contenido)
+            guardar(self.config_destino, username, contenido)
         else:
             self.contenido.append(self.__linea_actual)
 
@@ -86,7 +91,7 @@ class Parser:
         if multilinea['mlactivo']:
             return {'tipo': 'LINEA', 'mlactivo': True, 'mlatributo': multilinea['mlatributo']}
 
-        log.debug(f'Error > {linea.strip()} tendrá tokens por defecto')
+        log.debug("Error > {0} tendrá tokens por defecto".format(linea.strip()))
         return {'tipo': 'LINEA', 'mlactivo': False, 'mlatributo': multilinea['mlatributo']}
 
     def _crear_contenido_valido(self, tokens, linea):
@@ -96,9 +101,9 @@ class Parser:
         valor = linea[sep + 2:]
 
         valores_no_alpha = sum([1 for x in [c for c in valor] if x not in tuple(ascii_lowercase)])
-        valor = valor if valores_no_alpha == 0 else f"'{valor}'"
+        valor = valor if valores_no_alpha == 0 else "'{0}'".format(valor)
 
-        return f" {clave} {valor}"
+        return " {0} {1}".format(clave, valor)
 
     def _crear_contenido_multilinea(self, tokens, linea):
         sep = tokens['sep']
@@ -125,7 +130,7 @@ class Parser:
             contenido['multilinea'][clave] += linea + " \\\n"
         else:
             if clave != 'SISTEMA':
-                log.debug(f'Contenido sin procesar > {linea.strip()}')
+                log.debug("Contenido sin procesar > {0}".format(linea.strip()))
 
         return contenido
 

@@ -1,29 +1,27 @@
-# coding: utf-8
 from setuptools import setup
-
-install_requires = []
-
-dev_packages = {
-    'dev': [
-        'pytest',
-        'pytest-cov'
-    ]
-}
+from setuptools_rust import Binding, RustExtension
 
 setup(
-    name='MZBackup',
-    version='0.95',
-    description='Migración/Backup de Usuarios y Cuentas en Zimbra',
-    author='vtacius',
+    name='remoto',
+    version='0.9.45',
+    description='Backup de indices en Elasticsearch 6.x',
+    keywords='backup python rust',
+    author='Alexander Ortíz',
     author_email='vtacius@gmail.com',
     license='GPLv3',
 
-    packages=[
-        'MZBackup',
-        'MZBackup.lib',
-    ],
-    extras_require=dev_packages,
-    install_requires=install_requires,
+    packages=["remoto"],
+    rust_extensions=[RustExtension("remoto.remoto", binding=Binding.PyO3)],
+    # rust extensions are not zip safe, just like C-extensions.
+    zip_safe=False,
 
-    test_suite="pytest"
+    install_requires=[],
+
+    test_suite="pytest",
+
+    entry_points = {
+        'console_scripts': ['remoto=remoto.cli:main']
+        },
+
 )
+

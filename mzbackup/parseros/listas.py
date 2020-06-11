@@ -1,7 +1,7 @@
 from string import ascii_lowercase
 from logging import getLogger
-from MZBackup.parseros.comun import Parser
-from MZBackup.parseros.comun import Recolector
+from mzbackup.parseros.comun import Parser
+from mzbackup.parseros.comun import Recolector
 
 log = getLogger('MZBackup')
 
@@ -36,5 +36,5 @@ class ParserLista(Parser):
     def _titulador(self, contenido):
         # TODO: Si no funciona, podrías tirar una Excepción para contenido inválido
         contenido = contenido.split(" ")
-        resultado = f"zmprov cdl {contenido[2]}"
+        resultado = "zmprov cdl {0}".format(contenido[2])
         return resultado

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from MZBackup.utils.registro import configurar_log
+from mzbackup.utils.registro import configurar_log
 
 log = configurar_log(verbosidad=0)
 
@@ -8,7 +8,7 @@ log = configurar_log(verbosidad=0)
 class MetodosAuxiliaresParsero(TestCase):
 
     def test_titulador(self):
-        from MZBackup.parseros.usuarios import ParserUsuario
+        from mzbackup.parseros.usuarios import ParserUsuario
         parser = ParserUsuario({})
         resultado = parser._titulador("# name vtacius@dominio.com")
         self.assertEqual(resultado, 'zmprov ca vtacius@dominio.com P@ssw0rd')
@@ -17,18 +17,18 @@ class MetodosAuxiliaresParsero(TestCase):
 class Parsero(TestCase):
 
     @classmethod
-    def setUpClass(cls) -> None:
-        archivo = open("data/usuario/singular.data")
+    def setUpClass(cls):
+        archivo = open("tests/data/usuario/singular.data")
         cls.contenido = archivo.readlines()
         archivo.close()
 
-        archivo = open("data/usuario/singular.cmd")
+        archivo = open("tests/data/usuario/singular.cmd")
         cls.respuesta = archivo.read().rstrip()
         archivo.close()
 
     def test_parsear_contenido(self):
-        from MZBackup.parseros.usuarios import ParserUsuario
-        from MZBackup.parseros.usuarios import atributos
+        from mzbackup.parseros.usuarios import ParserUsuario
+        from mzbackup.parseros.usuarios import atributos
 
         parser = ParserUsuario(atributos)
         resultado = parser.procesar(self.contenido)

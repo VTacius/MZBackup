@@ -1,6 +1,6 @@
 from logging import getLogger
-from MZBackup.parseros.comun import Parser
-from MZBackup.parseros.comun import Recolector
+from mzbackup.parseros.comun import Parser
+from mzbackup.parseros.comun import Recolector
 
 log = getLogger('MZBackup')
 
@@ -44,5 +44,5 @@ class ParserUsuario(Parser):
         usuario = contenido[2]
         self.usuario = contenido[2]
         password = 'P@ssw0rd'
-        return f'zmprov ca {usuario.strip()} {password}'
+        return "zmprov ca {0} {1}".format(usuario.strip(), password)
 
