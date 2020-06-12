@@ -77,7 +77,7 @@ impl Ejecutor {
 }
 
 #[pymodule]
-pub fn remoto(_py: Python, m: &PyModule) -> PyResult<()>{
+pub fn mzbackup(_py: Python, m: &PyModule) -> PyResult<()>{
     m.add_class::<Ejecutor>()?;
     Ok(())
 }

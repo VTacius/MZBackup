@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 setuptools-rust = ">=0.10.6"
+pytest = ">=5.4.3"
+pylama = ">=7.7.1"
 
 [packages]
 

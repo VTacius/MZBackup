@@ -1,12 +1,12 @@
 [package]
-name = "remoto"
+name = "mzbackup"
 version = "0.1.0"
 authors = ["Alexander Ortiz <vtacius@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "remoto"
+name = "mzbackup"
 crate-type = ["cdylib"]
 
 [dependencies]
@@ -17,4 +17,3 @@ shellexpand = "2.0.0"
 [features]
 extension-module = ["pyo3/extension-module"]
 default = ["extension-module"]
-

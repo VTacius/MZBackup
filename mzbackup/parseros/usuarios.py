@@ -46,3 +46,9 @@ class ParserUsuario(Parser):
         password = 'P@ssw0rd'
         return "zmprov ca {0} {1}".format(usuario.strip(), password)
 
+    def _crear_contenido_procesal(self, tokens, linea):
+        # TODO: Una implementación real podría ser necesaria
+        sep = tokens['sep']
+        clave = linea[:sep]
+        valor = linea[sep + 2:]
+        return clave, valor

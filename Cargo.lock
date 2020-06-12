@@ -200,6 +200,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mzbackup"
+version = "0.1.0"
+dependencies = [
+ "pyo3 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shellexpand 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ssh2 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "openssl-sys"
 version = "0.9.58"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -327,15 +336,6 @@ dependencies = [
  "getrandom 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "redox_syscall 0.1.56 (registry+https://github.com/rust-lang/crates.io-index)",
  "rust-argon2 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "remoto"
-version = "0.1.0"
-dependencies = [
- "pyo3 0.10.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "shellexpand 2.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "ssh2 0.8.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

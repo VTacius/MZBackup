@@ -38,3 +38,10 @@ class ParserLista(Parser):
         contenido = contenido.split(" ")
         resultado = "zmprov cdl {0}".format(contenido[2])
         return resultado
+    
+    def _crear_contenido_procesal(self, tokens, linea):
+        # TODO: Una implementación real podría ser necesaria
+        sep = tokens['sep']
+        clave = linea[:sep]
+        valor = linea[sep + 2:]
+        return clave, valor

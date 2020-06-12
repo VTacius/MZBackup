@@ -90,14 +90,16 @@ Puede usarse una lista de usuarios sobre los cuales realizar el backup de defini
     $ python MZBackup/mailbox.py
 
 ### Desarrollo
-#### Instalacion
 ```sh
-python setup install
+pipenv install --dev
+rustup run nightly python setup.py build
 ```
 
 #### Linting
 ```sh
 pylama
+python -m pylama
+
 ```
 
 #### Testing
@@ -105,4 +107,9 @@ Llamando a pytest como módulo agrega el actual path al SYSPATH (La cosa más ge
 ```sh
 python -m pytest -v tests/
 ```
+
+### Instalacion
+ * Instalar python3.5
+ * Instalar pip
+ * Instalar el wheel
 

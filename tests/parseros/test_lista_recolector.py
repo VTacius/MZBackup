@@ -20,21 +20,23 @@ class Recolector(TestCase):
         resultado = recolector._es_primera_linea("# distributionList lista@dominio.com")
         self.assertFalse(resultado)
 
-    @mock.patch('mzbackup.parseros.comun.guardar')
+    @mock.patch('mzbackup.parseros.comun.guardar_multilinea')
+    @mock.patch('mzbackup.parseros.comun.guardar_contenido')
     @mock.patch('mzbackup.parseros.listas.ParserLista')
-    def test_es_ultima_linea(self, parser, guardar):
+    def test_es_ultima_linea(self, parser, guardar_contenido, guardar_multilinea):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", parser, {})
+        recolector = RecolectorListas({'directorio': '', 'fichero': '' }, parser, {})
         recolector.agregar("onovoa@hnm.gob.sv")
         recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
 
         self.assertTrue(recolector.fin_de_contenido)
 
-    @mock.patch('mzbackup.parseros.comun.guardar')
+    @mock.patch('mzbackup.parseros.comun.guardar_multilinea')
+    @mock.patch('mzbackup.parseros.comun.guardar_contenido')
     @mock.patch('mzbackup.parseros.listas.ParserLista')
-    def test_es_ultima_linea_sin_miembros(self, parser, guardar):
+    def test_es_ultima_linea_sin_miembros(self, parser, guardar_contenido, guardar_multilinea):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", parser, {})
+        recolector = RecolectorListas({'directorio': '', 'fichero': '' }, parser, {})
         recolector.agregar("members")
         recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
 
@@ -42,7 +44,7 @@ class Recolector(TestCase):
 
     def test_no_es_ultima_linea(self):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", {}, {})
+        recolector = RecolectorListas({'directorio': '', 'fichero': '' }, {}, {})
         recolector.agregar("mail: onovoa@hnm.gob.sv")
         recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
         self.assertFalse(recolector.fin_de_contenido)
@@ -56,11 +58,12 @@ class RecolectorFuncional(TestCase):
         cls.contenido = archivo.readlines()
         archivo.close()
 
-    @mock.patch('mzbackup.parseros.comun.guardar')
+    @mock.patch('mzbackup.parseros.comun.guardar_multilinea')
+    @mock.patch('mzbackup.parseros.comun.guardar_contenido')
     @mock.patch('mzbackup.parseros.listas.ParserLista')
-    def test_lista_correctamente(self, parser, guardar):
+    def test_lista_correctamente(self, parser, guardar_contenido, guardar_multilinea):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", parser, {})
+        recolector = RecolectorListas({'directorio': '', 'fichero': '' }, parser, {})
 
         total = 0
         for linea in self.contenido:

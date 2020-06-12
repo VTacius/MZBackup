@@ -27,7 +27,7 @@ def habilitar_fichero_origen(debe_crearse, comando, args, config_destino):
 ## TODO: Habilitar servidor remoto
 ## TODO: Envio a servidor remoto
 
-if __name__ == '__main__':
+def main():
     parser = ArgumentParser(description="Migración/Backup de Usuarios y Cuentas en Zimbra")
     parser.add_argument('objeto', choices=['cos', 'listas', 'usuarios'])
     parser.add_argument('--fichero', '-f', type=FileType('r'))
@@ -58,3 +58,6 @@ if __name__ == '__main__':
         recolector.agregar(linea)
     else:
         recolector.ultima_linea()
+
+if __name__ == '__main__':
+    main()

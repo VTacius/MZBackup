@@ -49,7 +49,6 @@ def examinar_directorio(config):
 def habilitar_directorio_local(debe_crearse, marca, config):
     resultado = config
     if debe_crearse:
-        marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
         directorio = "{}{}-{}".format(config['directorio'], config['fichero'], marca)
         mkdir(directorio, 0o750)
         
