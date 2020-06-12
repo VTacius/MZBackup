@@ -2,19 +2,7 @@ from os.path import isdir
 from os.path import basename
 from os.path import dirname
 from os import mkdir
-from os import access
-from os import W_OK
 
-from argparse import ArgumentTypeError
-
-
-def directorio(value):
-    if not isdir(value):
-        raise ArgumentTypeError('%s no es un directorio' % value)
-    if not access(value, W_OK):
-        raise ArgumentTypeError('%s no es un directorio accesible para escritura' % value)
-
-    return value
 
 
 def diseccionar_ruta(ruta):
@@ -30,26 +18,28 @@ def diseccionar_ruta(ruta):
     return {'directorio':directorio, 'fichero': fichero}
 
 
-def examinar_directorio(config):
-    resultado = ()
-    debe_crearse = False
-    fichero_origen = getattr(config.fichero, 'name', None) 
+def examinar_directorio(objeto, config):
+    """Si las opciones del cli dan un fichero válido, no será necesario crear el fichero"""
     
-    if fichero_origen:
+    resultado = ()
+    fichero_origen = getattr(config['fichero'], 'name', None) 
+    debe_crearse = fichero_origen == None
+    
+    if not debe_crearse:
         resultado = diseccionar_ruta(fichero_origen)
     else:
-        debe_crearse = True
-        fichero = getattr(config, 'objeto')
-        directorio = getattr(config, 'base')
-        resultado = {'directorio': directorio, 'fichero': fichero}
+        # Espera que el objeto config tenga una base por defecto
+        directorio = config.get('base')
+        resultado = {'directorio': directorio, 'fichero': objeto}
     
     return resultado, debe_crearse
 
 
 def habilitar_directorio_local(debe_crearse, marca, config):
     resultado = config
+    print(config)
     if debe_crearse:
-        directorio = "{}{}-{}".format(config['directorio'], config['fichero'], marca)
+        directorio = "{}/{}-{}".format(config['directorio'], config['fichero'], marca)
         mkdir(directorio, 0o750)
         
         resultado['directorio'] = directorio

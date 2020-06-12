@@ -26,6 +26,7 @@ class RecolectorCos(Recolector):
     def _guardar_procesal(self, config, identificador, contenido):
         # Recuerda que cada procesal requeriría una implementación diferente
         # Básicamente, habría un for - if 
+        archivos_creados = []
         if 'zimbraId' in contenido: 
             ruta = "{}/{}.{}".format(config['directorio'], config['fichero'], 'id')
             esquema = {}
@@ -40,6 +41,11 @@ class RecolectorCos(Recolector):
                 resultado = {**contenido['zimbraId']}
             with open(ruta, 'w+') as fichero: 
                 dump(resultado, fichero, indent=4)
+            
+            # Recuerda que es posible que más archivos sean creados
+            archivos_creados = [ruta]
+        
+        return archivos_creados 
 
 class ParserCos(Parser):
 

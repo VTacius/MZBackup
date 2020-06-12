@@ -2,6 +2,7 @@
 comando.sh
 fichero
 # Cosas que nunca en la vida voy a querer llevar alla
+.idea/
 target/
 Pipfile.lock
 *.id

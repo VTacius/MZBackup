@@ -8,13 +8,17 @@ def guardar_contenido(fichero, contenido):
         archivo.write("\n\n")
         archivo.write(contenido)
 
+    return fichero
+
 
 def guardar_multilinea(config_destino, usuario, contenido):
+    archivos_creados = []
     for k, v in contenido.items():
         fichero = "{0}{1}.cmd".format(config_destino['directorio'], k)
         ingreso = "zmprov ma {0} {1} {2}".format(usuario, k, v) 
-        almacenar(fichero, ingreso)
-    
+        archivos_creados.append(almacenar(fichero, ingreso))
+
+    return archivos_creados 
 
 class Recolector:
 
@@ -28,6 +32,7 @@ class Recolector:
         self.parser = parser
         self.attrs = attrs
         self.config_destino = config_destino
+        self.ficheros = []
 
     def _es_primera_linea(self, linea):
         pass
@@ -39,14 +44,17 @@ class Recolector:
         pass
 
     def _guardar(self, config, identificador, contenido):
+        archivos_creados = []
         if 'multilinea' in contenido:
-            guardar_multilinea(config, identificador, contenido['multilinea'])
+            archivos_creados.extend(guardar_multilinea(config, identificador, contenido['multilinea']))
         
         if 'procesal' in contenido:
-            self._guardar_procesal(config, identificador, contenido['procesal'])
+            archivos_creados.extend(self._guardar_procesal(config, identificador, contenido['procesal']))
         
         fichero = "{0}/{1}.cmd".format(config['directorio'], config['fichero'])
-        guardar_contenido(fichero, contenido['comando'])
+        archivos_creados.append(guardar_contenido(fichero, contenido['comando']))
+
+        return archivos_creados
 
     def ultima_linea(self):
         self.contenido.append(self.__linea_actual)
@@ -55,7 +63,9 @@ class Recolector:
         parser = self.parser(self.attrs)
         contenido = parser.procesar(self.contenido) 
         username = parser.usuario
-        self._guardar(self.config_destino, username, contenido)
+        self.ficheros.extend(self._guardar(self.config_destino, username, contenido))
+
+        return self.ficheros
 
     def agregar(self, linea):
 
@@ -72,7 +82,7 @@ class Recolector:
             parser = self.parser(self.attrs)
             contenido = parser.procesar(self.contenido) 
             username = parser.usuario
-            self._guardar(self.config_destino, username, contenido)
+            self.ficheros.extend(self._guardar(self.config_destino, username, contenido))
         else:
             self.contenido.append(self.__linea_actual)
 
