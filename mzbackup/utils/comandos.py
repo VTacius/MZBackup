@@ -18,9 +18,9 @@ def _ejecutar(comando, guardar):
     return error
 
 
-def ejecutor(comando, salida = None):
+def ejecutor(comando, salida=None):
     agregar = object()
-    es_contenido = False 
+    es_contenido = False
 
     if salida is None:
         salida = []

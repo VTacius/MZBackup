@@ -27,7 +27,7 @@ class Enviante(Thread):
             self.semaforo.acquire() 
             # Obtiene ruta de ficheros de backup en la cola
             backup = self.cola.get()
-            print "Enviando " + backup
+            print("Enviando " + backup)
  
             # Envia el fichero backup
             enviante(backup, backup)
@@ -35,7 +35,7 @@ class Enviante(Thread):
             # Enviamos una señal sobre que nuestro trabajo ha sido realizado con exito
             self.cola.task_done()
             self.semaforo.release()
-            print "Finalizado envío para " + backup
+            print ("Finalizado envío para " + backup)
  
 class Respaldante(Thread):
     """Creo el respaldo del usuario"""

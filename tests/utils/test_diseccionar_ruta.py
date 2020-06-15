@@ -5,7 +5,7 @@ class TestLetrador(TestCase):
     def test_diseccionar_ruta(self):
         from mzbackup.utils.rutas import diseccionar_ruta
         resultado = diseccionar_ruta("/home/vtacius/ESBackup/README.md")
-        self.assertEqual(resultado, {'directorio': '/home/vtacius/ESBackup/', 'fichero': 'README'})
+        self.assertEqual(resultado, {'directorio': '/home/vtacius/ESBackup', 'fichero': 'README'})
 
 
     def test_diseccionar_ruta_caso2(self):
@@ -31,3 +31,12 @@ class TestLetrador(TestCase):
         resultado = diseccionar_ruta("./README")
         self.assertEqual(resultado, {'directorio': './', 'fichero': 'README'})
 
+    def test_diseccionar_ruta_caso6(self):
+        from mzbackup.utils.rutas import diseccionar_ruta
+        resultado = diseccionar_ruta("../home/README.md")
+        self.assertEqual(resultado, {'directorio': '../home', 'fichero': 'README'})
+    
+    def test_diseccionar_ruta_caso7(self):
+        from mzbackup.utils.rutas import diseccionar_ruta
+        resultado = diseccionar_ruta("../README.md")
+        self.assertEqual(resultado, {'directorio': '../', 'fichero': 'README'})

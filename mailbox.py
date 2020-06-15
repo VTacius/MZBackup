@@ -80,7 +80,7 @@ if __name__ == "__main__":
         for usuario in lista_usuarios:
             respaldo = Respaldante(semaforo_respaldo, cola, usuario)
             respaldo.start()
-            if ejecutar_envio: 
+            if ejecutar_envio:
                 envio = Enviante(semaforo_envio, cola)
                 envio.setDaemon(True)
                 envio.start()

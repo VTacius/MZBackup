@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest import mock
 
 class TestFichero(TestCase):
-    """El fichero debe crearse"""
+    """El fichero debe NO crearse. Existe un fichero: La ruta del nuevo coincide con este"""
     
     @classmethod
     def setUpClass(cls):
@@ -15,14 +15,14 @@ class TestFichero(TestCase):
    
     @mock.patch('mzbackup.utils.rutas.diseccionar_ruta')
     def test_examinar_directorio(self, diseccionar_ruta):
-        diseccionar_ruta.return_value = {'directorio': '/opt/backup/', 'fichero': 'README'}
+        diseccionar_ruta.return_value = {'directorio': '/opt/backup', 'fichero': 'README'}
         from mzbackup.utils.rutas import examinar_directorio
         resultado = examinar_directorio('README', self.config)
-        self.assertEqual(resultado, ({'directorio': '/opt/backup/', 'fichero': 'README'}, False))
+        self.assertEqual(resultado, ({'directorio': '/opt/backup', 'fichero': 'README'}, False))
 
 
 class TestBase(TestCase):
-    """El fichero no debe crearse. Fichero es None"""
+    """El fichero DEBE crearse. Fichero es None"""
 
     @classmethod
     def setUpClass(cls):
@@ -34,4 +34,4 @@ class TestBase(TestCase):
     def test_examinar_directorio(self):
         from mzbackup.utils.rutas import examinar_directorio
         resultado = examinar_directorio('burbuja', self.config)
-        self.assertEqual(resultado, ({'directorio': '/opt/backup/', 'fichero': 'burbuja'}, True))
+        self.assertEqual(resultado, ({'directorio': '/opt/backup', 'fichero': 'burbuja'}, True))
