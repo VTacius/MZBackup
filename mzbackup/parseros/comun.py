@@ -3,7 +3,9 @@ from string import ascii_lowercase
 
 log = getLogger('MZBackup')
 
+
 def guardar_contenido(fichero, contenido):
+    """Operación sencilla para crear a `fichero` con `contenido`"""
     with open(fichero, 'a') as archivo:
         archivo.write("\n\n")
         archivo.write(contenido)
@@ -11,18 +13,21 @@ def guardar_contenido(fichero, contenido):
     return fichero
 
 
-def guardar_multilinea(config_destino, usuario, contenido):
+def guardar_multilinea(pato, usuario, contenido):
+    """Operación para guadar los comandos que configuran los atributos multilinea"""
     archivos_creados = []
     for k, v in contenido.items():
-        fichero = "{0}{1}.cmd".format(config_destino['directorio'], k)
-        ingreso = "zmprov ma {0} {1} {2}".format(usuario, k, v) 
-        archivos_creados.append(almacenar(fichero, ingreso))
+        fichero = "{0}/{1}.cmd".format(pato.ruta, k)
+        # TODO: Recuerda que tení que cambiar esto para hacerlo más genérico
+        ingreso = "zmprov ma {0} {1} {2}".format(usuario, k, v)
+        archivos_creados.append(guardar_contenido(fichero, ingreso))
 
-    return archivos_creados 
+    return archivos_creados
+
 
 class Recolector:
 
-    def __init__(self, config_destino, parser, attrs):
+    def __init__(self, parser, attrs):
         self.__linea_actual = None
         self.__linea_siguiente = None
 
@@ -31,28 +36,31 @@ class Recolector:
 
         self.parser = parser
         self.attrs = attrs
-        self.config_destino = config_destino
+        self.config_destino = {'directorio': "./", 'fichero': "objeto"}
         self.ficheros = []
+
+    def configurar_destino(self, config_destino):
+        self.config_destino = config_destino
 
     def _es_primera_linea(self, linea):
         pass
 
     def _es_ultima_linea(self, linea):
         pass
-   
+
     def _guardar_procesal(config, identificador, contenido):
         pass
 
-    def _guardar(self, config, identificador, contenido):
+    def _guardar(self, pato, identificador, contenido):
         archivos_creados = []
         if 'multilinea' in contenido:
-            archivos_creados.extend(guardar_multilinea(config, identificador, contenido['multilinea']))
-        
+            archivos_creados.extend(guardar_multilinea(pato, identificador, contenido['multilinea']))
+
         if 'procesal' in contenido:
-            archivos_creados.extend(self._guardar_procesal(config, identificador, contenido['procesal']))
-        
-        fichero = "{0}/{1}.cmd".format(config['directorio'], config['fichero'])
-        archivos_creados.append(guardar_contenido(fichero, contenido['comando']))
+            archivos_creados.extend(self._guardar_procesal(pato, identificador, contenido['procesal']))
+
+        pato.extension = "cmd"
+        archivos_creados.append(guardar_contenido(str(pato), contenido['comando']))
 
         return archivos_creados
 
@@ -61,7 +69,7 @@ class Recolector:
         self.fin_de_contenido = True
 
         parser = self.parser(self.attrs)
-        contenido = parser.procesar(self.contenido) 
+        contenido = parser.procesar(self.contenido)
         username = parser.usuario
         self.ficheros.extend(self._guardar(self.config_destino, username, contenido))
 
@@ -80,7 +88,7 @@ class Recolector:
             self.fin_de_contenido = True
 
             parser = self.parser(self.attrs)
-            contenido = parser.procesar(self.contenido) 
+            contenido = parser.procesar(self.contenido)
             username = parser.usuario
             self.ficheros.extend(self._guardar(self.config_destino, username, contenido))
         else:
@@ -102,7 +110,7 @@ class Parser:
 
         if clave in self.attr['multilinea']:
             return {'tipo': 'MULTILINEA', 'sep': sep, 'mlactivo': True, 'mlatributo': clave}
-    
+
         if clave in self.attr['procesal']:
             return {'tipo': 'PROCESAL', 'sep': sep, 'mlactivo': False, 'mlatributo': clave}
 
@@ -116,7 +124,7 @@ class Parser:
         if multilinea['mlactivo']:
             return {'tipo': 'LINEA', 'mlactivo': True, 'mlatributo': multilinea['mlatributo']}
 
-        log.debug("Error > {0} tendrá tokens por defecto".format(linea.strip()))
+        log.trace("Error > {0} tendrá tokens por defecto".format(linea.strip()))
         return {'tipo': 'LINEA', 'mlactivo': False, 'mlatributo': multilinea['mlatributo']}
 
     def _crear_contenido_valido(self, tokens, linea):
@@ -136,7 +144,7 @@ class Parser:
         valor = linea[sep + 2:] + " \\\n"
 
         return clave, valor
-    
+
     def _crear_contenido_procesal(self, tokens, linea):
         pass
 
@@ -157,7 +165,7 @@ class Parser:
             contenido['multilinea'][clave] += linea + " \\\n"
         else:
             if tipo != 'SISTEMA':
-                log.debug("Contenido sin procesar > {0}".format(linea.strip()))
+                log.trace("Contenido sin procesar > {0}".format(linea.strip()))
 
         return contenido
 
@@ -172,7 +180,7 @@ class Parser:
         for linea in contenido[1:]:
             tokens = self.obtener_tipo(linea, multilinea)
             # Conforme vamos procesando, tanto multilinea y resultado van actualizandose
-            # La idea es evitar la recursividad propiamente dicha, 
+            # La idea es evitar la recursividad propiamente dicha,
             #  pero aprovechar sus principios
             multilinea = {'mlactivo': tokens['mlactivo'], 'mlatributo': tokens['mlatributo']}
             resultado = self.parsear_linea(resultado, tokens, linea)

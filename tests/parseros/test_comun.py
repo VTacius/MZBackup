@@ -1,5 +1,4 @@
 from unittest import TestCase
-from unittest import skip
 
 from mzbackup.utils.registro import configurar_log
 

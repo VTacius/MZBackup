@@ -1,7 +1,5 @@
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE
 from shlex import split
-from time import sleep
-from io import TextIOWrapper
 
 
 def _ejecutar(comando, guardar):
@@ -13,7 +11,7 @@ def _ejecutar(comando, guardar):
         error = cursor.stderr.readlines()
 
     if cursor.returncode != 0:
-       error = "".join(error).rstrip()
+        error = "".join(error).rstrip()
 
     return error
 
@@ -40,5 +38,5 @@ def ejecutor(comando, salida=None):
     if not es_contenido:
         salida.close()
         salida = []
-    
+
     return salida, error

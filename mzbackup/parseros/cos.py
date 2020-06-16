@@ -3,7 +3,7 @@ from mzbackup.parseros.comun import Parser
 from mzbackup.parseros.comun import Recolector
 
 from json import load, dump
-from os import stat, path
+from os import path
 
 log = getLogger('MZBackup')
 
@@ -22,13 +22,14 @@ class RecolectorCos(Recolector):
 
     def _es_ultima_linea(self, linea):
         return linea == ''
-    
-    def _guardar_procesal(self, config, identificador, contenido):
+
+    def _guardar_procesal(self, pato, identificador, contenido):
         # Recuerda que cada procesal requeriría una implementación diferente
-        # Básicamente, habría un for - if 
+        # Básicamente, habría un for - if
         archivos_creados = []
-        if 'zimbraId' in contenido: 
-            ruta = "{}/{}.{}".format(config['directorio'], config['fichero'], 'id')
+        if 'zimbraId' in contenido:
+            pato.extension = "id"
+            ruta = str(pato)
             esquema = {}
             resultado = {}
             # Parece que se comporta bien, aún cuando el fichero ya existe.
@@ -39,13 +40,14 @@ class RecolectorCos(Recolector):
                     resultado = {**esquema, **contenido['zimbraId']}
             else:
                 resultado = {**contenido['zimbraId']}
-            with open(ruta, 'w+') as fichero: 
+            with open(ruta, 'w+') as fichero:
                 dump(resultado, fichero, indent=4)
-            
+
             # Recuerda que es posible que más archivos sean creados
             archivos_creados = [ruta]
-        
-        return archivos_creados 
+
+        return archivos_creados
+
 
 class ParserCos(Parser):
 
@@ -54,7 +56,7 @@ class ParserCos(Parser):
         identificador = contenido[2].strip()
         self.identificador = identificador
         return "zmprov cc {}".format(identificador)
-    
+
     def _crear_contenido_procesal(self, tokens, linea):
         sep = tokens['sep']
         clave = linea[:sep]
@@ -64,4 +66,4 @@ class ParserCos(Parser):
         # otras tantas implementaciones
         # Por ahora, esta es un poco sencilla: El ID es la nueva clave, el valor nuestro identificador global
         resultado = {valor: self.identificador}
-        return clave, resultado 
+        return clave, resultado
