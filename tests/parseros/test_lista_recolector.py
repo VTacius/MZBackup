@@ -10,15 +10,32 @@ class Recolector(TestCase):
 
     def test_es_primera_linea(self):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", {})
+        recolector = RecolectorListas({}, {})
         resultado = recolector._es_primera_linea("# distributionList lista@dominio.com memberCount=11")
         self.assertTrue(resultado)
 
-    def test_no_es_primera_linea(self):
+    def test_es_primera_linea_caso2(self):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas("", {})
+        recolector = RecolectorListas({}, {})
         resultado = recolector._es_primera_linea("# distributionList lista@dominio.com")
         self.assertFalse(resultado)
+
+    #def test_es_primera_linea_caso3(self):
+    #    from mzbackup.parseros.listas import RecolectorListas
+    #    recolector = RecolectorListas({}, {})
+    #    recolector.agregar("pflores@conasan.gob.sv")
+    #    recolector.agregar("# distributionList lista@dominio.com")
+    #    recolector.agregar("# distributionList lista@dominio.com")
+    #    recolector.agregar("objectClass: zimbraDistributionList")
+    #    self.assertEqual(recolector.contenido, [None, "# distributionList lista@dominio.com"])
+
+    #def test_es_primera_linea_caso4(self):
+    #    from mzbackup.parseros.listas import RecolectorListas
+    #    recolector = RecolectorListas({}, {})
+    #    recolector.agregar("members")
+    #    recolector.agregar("# distributionList lista@dominio.com")
+    #    recolector.agregar("objectClass: zimbraDistributionList")
+    #    self.assertEqual(recolector.contenido, [None, "# distributionList lista@dominio.com"])
 
     @mock.patch('mzbackup.parseros.cos.Recolector._guardar')
     @mock.patch('mzbackup.parseros.listas.ParserLista')
@@ -26,7 +43,8 @@ class Recolector(TestCase):
         from mzbackup.parseros.listas import RecolectorListas
         recolector = RecolectorListas(parser, {})
         recolector.agregar("onovoa@hnm.gob.sv")
-        recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
+        recolector.agregar("")
+        recolector.agregar("members")
 
         self.assertTrue(recolector.fin_de_contenido)
 
@@ -35,17 +53,30 @@ class Recolector(TestCase):
     def test_es_ultima_linea_sin_miembros(self, parser, guardar):
         from mzbackup.parseros.listas import RecolectorListas
         recolector = RecolectorListas(parser, {})
+        recolector.agregar("")
         recolector.agregar("members")
-        recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
 
         self.assertTrue(recolector.fin_de_contenido)
 
-    def test_no_es_ultima_linea(self):
+    @mock.patch('mzbackup.parseros.cos.Recolector._guardar')
+    @mock.patch('mzbackup.parseros.listas.ParserLista')
+    def test_es_ultima_linea_multilinea(self, parser, guardar):
         from mzbackup.parseros.listas import RecolectorListas
-        recolector = RecolectorListas({}, {})
-        recolector.agregar("mail: onovoa@hnm.gob.sv")
-        recolector.agregar("# distributionList jefaturas@dominio.com memberCount=37")
-        self.assertFalse(recolector.fin_de_contenido)
+        recolector = RecolectorListas(parser, {})
+        recolector.agregar("zimbraNotes: Yasmin del Carmen Jaime de Diaz")
+        recolector.agregar("")
+        recolector.agregar("members")
+
+        self.assertTrue(recolector.fin_de_contenido)
+
+    @mock.patch('mzbackup.parseros.cos.Recolector._guardar')
+    @mock.patch('mzbackup.parseros.listas.ParserLista')
+    def test_no_es_ultima_linea(self, parser, guardar):
+        from mzbackup.parseros.listas import RecolectorListas
+        recolector = RecolectorListas(parser, {})
+        recolector.agregar("")
+        recolector.agregar("members")
+        self.assertTrue(recolector.fin_de_contenido)
 
 
 class RecolectorFuncional(TestCase):
@@ -61,14 +92,9 @@ class RecolectorFuncional(TestCase):
     def test_lista_correctamente(self, parser, guardar):
         from mzbackup.parseros.listas import RecolectorListas
         recolector = RecolectorListas(parser, {})
-
         total = 0
         for linea in self.contenido:
             recolector.agregar(linea)
-            if recolector.fin_de_contenido:
-                total += 1
-        else:
-            recolector.ultima_linea()
             if recolector.fin_de_contenido:
                 total += 1
 

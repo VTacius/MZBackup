@@ -1,3 +1,4 @@
+"""Ejecución de comandos en el sistema"""
 from subprocess import Popen, PIPE
 from shlex import split
 
@@ -17,6 +18,7 @@ def _ejecutar(comando, guardar):
 
 
 def ejecutor(comando, salida=None):
+    """Prepara el objeto de salida de un comando"""
     agregar = object()
     es_contenido = False
 
@@ -32,8 +34,8 @@ def ejecutor(comando, salida=None):
 
     try:
         error = _ejecutar(split(comando), agregar)
-    except Exception as e:
-        error = e
+    except Exception as misktake:
+        error = misktake
 
     if not es_contenido:
         salida.close()
