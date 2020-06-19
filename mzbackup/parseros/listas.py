@@ -1,8 +1,9 @@
 """ Implementación de Recolector y Parser para objeto LISTAS"""
 from logging import getLogger
 
-from mzbackup.parseros.comun import Parser
-from mzbackup.parseros.comun import Recolector
+from mzbackup.parseros.parser import Parser
+from mzbackup.parseros.recolector import Recolector
+from mzbackup.utils.europa import AbstractEuropa
 
 log = getLogger('MZBackup')
 
@@ -17,6 +18,19 @@ atributos = {
     'multilinea': ['zimbraNotes']
 }
 
+class EuropaLista(AbstractEuropa):
+    def _guardar_procesal(self, _modificante, identificador, contenido):
+        # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
+        if 'zimbraMailForwardingAddress' in contenido:
+            valor = contenido['zimbraMailForwardingAddress']
+            contenido = "zmprov adl {} {}".format(identificador, valor)
+            self.pato.archivo = 'zimbraMailForwardingAddress'
+            self.pato.extension = "cmd"
+            fichero = open(str(self.pato), 'a')
+            fichero.write(contenido)
+            fichero.write("\n\n")
+            self.archivos_creados.append(str(self.pato))
+
 
 class RecolectorListas(Recolector):
     """Implementa un Recolector adecuado para LISTA"""
@@ -26,42 +40,15 @@ class RecolectorListas(Recolector):
 
         return False
 
-    def _es_ultima_linea(self, linea: str):
+    def _es_final_de_contenido(self, linea: str):
         return linea == ""
 
-    def _guardar_procesal(self, pato, identificador, contenido):
-        # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
-        archivos_creados = []
-        if 'zimbraMailForwardingAddress' in contenido:
-            valor = contenido['zimbraMailForwardingAddress']
-            contenido = "zmprov adlm {} {}".format(identificador, valor)
-            pato.archivo = 'zimbraMailForwardingAddress'
-            pato.extension = "cmd"
-            fichero = open(str(pato), 'a')
-            fichero.write(contenido)
-            fichero.write("\n\n")
-            archivos_creados.append(str(pato))
-        return archivos_creados
+    def _es_ultima_linea(self, linea_actual, linea_siguiente):
+        """Esta implementación es útil para COS y Usuarios"""
+        es_ultima_linea = self._es_final_de_contenido(linea_actual)
+        es_linea_members = linea_siguiente == "members" 
+        return es_ultima_linea and es_linea_members
 
-    def agregar(self, linea):
-
-        self._linea_actual, self._linea_siguiente = self._linea_siguiente, linea.rstrip()
-
-        if self._es_primera_linea(self._linea_actual):
-            self.contenido = []
-            self.contenido.append(self._linea_actual)
-            self.fin_de_contenido = False
-        elif self._es_ultima_linea(self._linea_actual) and self._linea_siguiente == "members":
-            self.contenido.append(self._linea_actual)
-            self.fin_de_contenido = True
-
-            parser = self.parser(self.attrs)
-            contenido = parser.procesar(self.contenido)
-            identificador = parser.identificador
-            self.ficheros.extend(self._guardar(self.config_destino, identificador, contenido))
-        else:
-            self.fin_de_contenido = False
-            self.contenido.append(self._linea_actual)
 
 class ParserLista(Parser):
     """Implementa un Parser adecuado para LISTA"""

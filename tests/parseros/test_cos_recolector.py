@@ -20,11 +20,12 @@ class Recolector(TestCase):
         resultado = recolector._es_primera_linea("# nombre UsuariosDirectivos")
         self.assertFalse(resultado)
 
-    @mock.patch('mzbackup.parseros.cos.Recolector._guardar')
+    @mock.patch('mzbackup.utils.pato.Pato')
     @mock.patch('mzbackup.parseros.cos.ParserCos')
-    def test_es_ultima_linea(self, parser, guadar):
+    def test_es_ultima_linea(self, parser, pato):
         from mzbackup.parseros.cos import RecolectorCos
         recolector = RecolectorCos(parser, {})
+        recolector.configurar_destino(pato)
         recolector.agregar("")
         recolector.agregar("# name UsuariosEjecutivos")
         self.assertTrue(recolector.fin_de_contenido)
@@ -38,11 +39,12 @@ class RecolectorFuncional(TestCase):
         cls.contenido = archivo.readlines()
         archivo.close()
 
-    @mock.patch('mzbackup.parseros.cos.Recolector._guardar')
+    @mock.patch('mzbackup.utils.pato.Pato')
     @mock.patch('mzbackup.parseros.cos.ParserCos')
-    def test_lista_correctamente(self, parser, guadar):
+    def test_lista_correctamente(self, parser, pato):
         from mzbackup.parseros.cos import RecolectorCos
         recolector = RecolectorCos(parser, {})
+        recolector.configurar_destino(pato)
 
         total = 0
         for linea in self.contenido:

@@ -3,8 +3,9 @@ from logging import getLogger
 from json import load, dump
 from os import path
 
-from mzbackup.parseros.comun import Parser
-from mzbackup.parseros.comun import Recolector
+from mzbackup.parseros.parser import Parser
+from mzbackup.parseros.recolector import Recolector
+from mzbackup.utils.europa import AbstractEuropa
 
 
 log = getLogger('MZBackup')
@@ -18,24 +19,15 @@ atributos = {'posix': ['cn', 'description'],
              'multilinea': ['zimbraNotes']}
 
 
-class RecolectorCos(Recolector):
-    """Implementa un Recolector adecuado para COS"""
-    def _es_primera_linea(self, linea):
-        if linea and linea.startswith("# name "):
-            return len(linea.split(' ')) == 3 and linea.split(' ')[2].find(' ', 0) == -1
+class EuropaCos(AbstractEuropa):
+    """Establece métodos de guardado para objeto COS"""
 
-        return False
-
-    def _es_ultima_linea(self, linea):
-        return linea == ''
-
-    def _guardar_procesal(self, pato, identificador, contenido):
+    def _guardar_procesal(self, _modificante, identificador, contenido):
         # Recuerda que cada procesal requeriría una implementación diferente
         # Básicamente, habría un for - if
-        archivos_creados = []
         if 'zimbraId' in contenido:
-            pato.extension = "id"
-            ruta = str(pato)
+            self.pato.extension = "id"
+            ruta = str(self.pato)
             esquema = {}
             resultado = {}
             # Parece que se comporta bien, aún cuando el fichero ya existe.
@@ -46,13 +38,25 @@ class RecolectorCos(Recolector):
                     resultado = {**esquema, **contenido['zimbraId']}
             else:
                 resultado = {**contenido['zimbraId']}
+
             with open(ruta, 'w+') as fichero:
                 dump(resultado, fichero, indent=4)
 
             # Recuerda que es posible que más archivos sean creados
-            archivos_creados = [ruta]
+            self.archivos_creados.append(ruta)
 
-        return archivos_creados
+
+class RecolectorCos(Recolector):
+    """Implementa un Recolector adecuado para COS"""
+    def _es_primera_linea(self, linea):
+        if linea and linea.startswith("# name "):
+            return len(linea.split(' ')) == 3 and linea.split(' ')[2].find(' ', 0) == -1
+
+        return False
+
+    def _es_final_de_contenido(self, linea):
+        return linea == ''
+
 
 
 class ParserCos(Parser):

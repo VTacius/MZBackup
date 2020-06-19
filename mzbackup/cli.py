@@ -5,8 +5,8 @@ from datetime import datetime
 import click
 
 from mzbackup.parseros.cos import RecolectorCos, atributos as cos_attrs, ParserCos
-from mzbackup.parseros.listas import RecolectorListas, atributos as lista_attrs, ParserLista
-from mzbackup.parseros.usuarios import RecolectorUsuarios, atributos as usuario_attrs, ParserUsuario
+
+from mzbackup.parseros.cos import EuropaCos
 
 from mzbackup.mzbackup import Ejecutor
 
@@ -67,7 +67,7 @@ def habilitar_fichero_contenido(pato, comando):
     if pato.debe_crearse:
         pato.extension = "data"
         log.debug("> Creando el fichero %s" % str(pato))
-        contenido, error = ejecutor(comando, str(pato))
+        _contenido, error = ejecutor(comando, str(pato))
         if error:
             raise ErrorSistemaLocal(error)
         archivo = open(str(pato))
@@ -77,7 +77,7 @@ def habilitar_fichero_contenido(pato, comando):
     return archivo
 
 
-def operacion_principal(pato, recolector, comando):
+def operacion_principal(pato, europa, recolector: RecolectorCos, comando):
     """Define las operaciones para la mayoría de subcomandos"""
     log = get_logger()
 
@@ -88,14 +88,15 @@ def operacion_principal(pato, recolector, comando):
     archivo = habilitar_fichero_contenido(pato, comando)
 
     log.info('Operacion Principal: Recolectando Información desde ficheros')
-    ficheros_creados = [archivo.name]
-    recolector.configurar_destino(pato)
+    #ficheros_creados = [archivo.name]
+    recolector.configurar_destino(europa)
 
     for linea in archivo:
         recolector.agregar(linea)
-    ficheros_creados.extend(recolector.ultima_linea())
+    
+    recolector.ultima_linea()
 
-    return {*ficheros_creados}
+    return {*recolector.destino.listar_archivos()}
 
 
 @main.command()
@@ -110,46 +111,14 @@ def cos(**args):
     try:
         pato = Pato('cos', marca, args)
         pato_remoto = PatoRemoto('cos', marca, args['base'])
+        europa = EuropaCos(pato, cos_attrs['modificante'])
         recolector = RecolectorCos(ParserCos, cos_attrs)
-        ficheros_creados = operacion_principal(pato, recolector, "zmprov gac -v")
+        ficheros_creados = operacion_principal(pato, europa, recolector, "zmprov gac -v")
         enviar_remoto(args['envio'], args['remoto'], pato_remoto, ficheros_creados)
     except Exception as mistake:
         log.error(mistake)
         traceback.print_exc()
         exit(1)
-
-
-@main.command()
-@opciones
-def listas(**args):
-    """Backup de información de Listas de Distribución"""
-    log = configurar_log(verbosidad=args['verbose'])
-    log.info("Empiezan operaciones para backup de Listas de Distribución")
-
-    marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
-
-    try:
-        pato = Pato('listas', marca, args)
-        pato_remoto = PatoRemoto('listas', marca, args['base'])
-        recolector = RecolectorListas(ParserLista, lista_attrs)
-        ficheros_creados = operacion_principal(pato, recolector, "zmprov -l gadl -v ")
-        enviar_remoto(args['envio'], args['remoto'], pato_remoto, ficheros_creados)
-    except Exception as mistake:
-        log.error(mistake)
-        traceback.print_exc()
-        exit(1)
-
-
-@main.command()
-@opciones
-def usuarios(**args):
-    """Backup de información de cuentas de usuarios"""
-    log = configurar_log(verbosidad=args['verbose'])
-    log.info("Empiezan operaciones para backup de Usuarios")
-
-    dominios, error = ejecutor("zmprov gad")
-    for dominio in dominios:
-        print("zmprov -l gaa {} -v".format(dominio.rstrip("\n")))
 
 
 if __name__ == "__main__":

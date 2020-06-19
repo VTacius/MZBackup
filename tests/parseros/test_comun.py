@@ -12,7 +12,7 @@ class TestCrearContenidoMultilinea(TestCase):
         tokens = {'sep': 18, 'mlatributo': 'atributoMultilinea'}
         linea = "atributoMultilinea: Valor"
        
-        from mzbackup.parseros.comun import Parser
+        from mzbackup.parseros.parser import Parser
         parser = Parser({})
         resultado = parser._crear_contenido_multilinea(tokens, linea)
         self.assertEqual(resultado, ('atributoMultilinea', 'Valor'))
@@ -20,7 +20,7 @@ class TestCrearContenidoMultilinea(TestCase):
     def test_parsear_contenido_multilinea(self):
         """Es bastante complejo y funcional respecto a como prueba el efectivo parseo de contenido
         multilinea"""
-        from mzbackup.parseros.comun import Parser
+        from mzbackup.parseros.parser import Parser
         parser = Parser({})
        
         procesables = [
@@ -51,7 +51,7 @@ class PatoMock():
 class TestRecolectorGuardar(TestCase):
     """El método Recolector._guardar, que pone punto final a toda la operacion"""
     
-    @mock.patch('mzbackup.parseros.comun.open')
+    @mock.patch('mzbackup.parseros.recolector.open')
     def test_listado_ficheros(self, open):
         """Recuerda que, para evitar confusiones, lo mejor es que cada tipo configure a pato de
         acuerdo a sus necesidades.
@@ -61,14 +61,14 @@ class TestRecolectorGuardar(TestCase):
         pato = PatoMock()
         contenido = {'comando': "zmprov ca alortiz@salud.gob.sv", 'multilinea': {'atributo': 'valor', 'attr': 'Value'}}
         
-        from mzbackup.parseros.comun import Recolector  
+        from mzbackup.parseros.recolector import Recolector  
         recolector = Recolector({}, attrs)
         archivos_creados = recolector._guardar(pato, "objeto", contenido)  
         self.assertEqual(set(archivos_creados), set(["objeto.cmd", "atributo.cmd", "attr.cmd"]))
 
 class TestGuardarMultilinea(TestCase):
     """Este se fija solo en la implementación de los helpers, pero no profundiza en el contenido""" 
-    @mock.patch('mzbackup.parseros.comun.open')
+    @mock.patch("mzbackup.utils.europa.open")
     def test_ficheros_guardar_multilinea(self, guardar):
         pato = Vacio()
         pato.ruta = lambda: "/var/backup"
@@ -110,10 +110,10 @@ class Abrir():
 
 
 class TestGuardar(TestCase):
-    @mock.patch("mzbackup.parseros.comun.open")
+    @mock.patch("mzbackup.utils.europa.open")
     def test_guardar_contenido(self, open):
         """Siento que es un poco inútil si no puedo ver el contenido formado"""
-        from mzbackup.parseros.comun import guardar_contenido
+        from mzbackup.utils.europa import guardar_contenido
         open.return_value.__enter__ = Abrir.ejecutar
         a = guardar_contenido("direccion", "contenido\nnada\ntodo")
         self.assertEqual(a, "direccion")
@@ -122,7 +122,7 @@ class TestGuardar(TestCase):
 class TestParser(TestCase):
 
     def test_crear_contenido_valido(self):
-        from mzbackup.parseros.comun import Parser
+        from mzbackup.parseros.parser import Parser
         parser = Parser({})
         tokens = {'sep': 8}
         linea = "atributo: valor"
@@ -130,14 +130,14 @@ class TestParser(TestCase):
         self.assertEqual(" atributo valor", resultado)
 
     def test_valuar_con_espacio(self):
-        from mzbackup.parseros.comun import Parser
+        from mzbackup.parseros.parser import Parser
         parser = Parser({})
         tokens = {'sep': 8}
         resultado = parser._crear_contenido_valido(tokens, "atributo: Este es mi contenido")
         self.assertEqual(resultado, " atributo 'Este es mi contenido'")
 
     def test_valuar_con_caracter(self):
-        from mzbackup.parseros.comun import Parser
+        from mzbackup.parseros.parser import Parser
         parser = Parser({})
         tokens = {'sep': 8}
         resultado = parser._crear_contenido_valido(tokens, "atributo: E$ta")

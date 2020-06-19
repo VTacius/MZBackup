@@ -1,8 +1,8 @@
 """ Implementación de Recolector y Parser para objeto USUARIO"""
 from logging import getLogger
 
-from mzbackup.parseros.comun import Parser
-from mzbackup.parseros.comun import Recolector
+from mzbackup.parseros.parser import Parser
+from mzbackup.parseros.recolector import Recolector
 
 log = getLogger('MZBackup')
 
@@ -44,7 +44,7 @@ class RecolectorUsuarios(Recolector):
 
         return False
 
-    def _es_ultima_linea(self, linea: str):
+    def _es_final_de_contenido(self, linea: str):
         return linea == ''
 
 
