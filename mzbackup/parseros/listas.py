@@ -19,6 +19,7 @@ atributos = {
 }
 
 class EuropaLista(AbstractEuropa):
+    """Implementación de las funcionalidades de guardado para objeto LISTA"""
     def _guardar_procesal(self, _modificante, identificador, contenido):
         # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
         if 'zimbraMailForwardingAddress' in contenido:
@@ -46,24 +47,16 @@ class RecolectorListas(Recolector):
     def _es_ultima_linea(self, linea_actual, linea_siguiente):
         """Esta implementación es útil para COS y Usuarios"""
         es_ultima_linea = self._es_final_de_contenido(linea_actual)
-        es_linea_members = linea_siguiente == "members" 
+        es_linea_members = linea_siguiente == "members"
         return es_ultima_linea and es_linea_members
 
 
 class ParserLista(Parser):
     """Implementa un Parser adecuado para LISTA"""
 
-    def _titulador(self, contenido):
-        # TODO: Si no funciona, podrías tirar una Excepción para contenido inválido
-        contenido = contenido.split(' ')
-        identificador = contenido[2].strip()
-        resultado = "zmprov cdl {0}".format(identificador)
+    def _titulador(self, linea):
+        linea = linea.split(' ')
+        identificador = linea[2].strip()
+        titulo = "zmprov cdl {0}".format(identificador)
         self.identificador = identificador
-        return resultado
-
-    def _crear_contenido_procesal(self, tokens, linea):
-        # TODO: Una implementación real podría ser necesaria
-        sep = tokens['sep']
-        clave = linea[:sep]
-        valor = linea[sep + 2:]
-        return clave, valor
+        return titulo

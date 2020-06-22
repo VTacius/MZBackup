@@ -1,11 +1,36 @@
 """Definiciones Genéricas de Recolector y Parser, con las funcionalidades más básicas"""
-from string import ascii_lowercase
+from abc import abstractmethod, ABC
+from string import ascii_letters, digits
 
 from mzbackup.utils.registro import get_logger
 
 log = get_logger()
 
-class Parser:
+
+def _crear_clave_valor(tokens, linea):
+    """Separa a linea en clave y valor en el punto de separador"""
+    sep = tokens['sep']
+    clave = linea[:sep]
+    valor = linea[sep + 2:]
+    return clave, valor
+
+
+def _crear_contenido_valido(tokens, linea):
+    """Procesa un atributo - valor de cada línea, y lo entrecomilla de ser necesario"""
+    clave, valor = _crear_clave_valor(tokens, linea)
+
+    valores_no_ascii = filter(lambda x: x not in ascii_letters + digits, valor)
+    necesita_espacios = len(list(valores_no_ascii)) > 0
+    valor = "'{0}'".format(valor)if necesita_espacios else valor
+
+    return " {0} {1}".format(clave, valor)
+
+
+class ParserError(Exception):
+    """Error personalizado para operaciones de Parseo"""
+
+
+class Parser(ABC):
     """Parser génericos con las operaciones básicas para procesar el contenido recolectado"""
     def __init__(self, atributos):
         self.identificador = ""
@@ -25,27 +50,22 @@ class Parser:
 
         for tipo, attrs in self.attr.items():
             if clave in attrs:
-                return {'tipo': tipo.upper(), 'sep': sep, 'mlactivo': False, 'mlatributo': multilinea['mlatributo']}
+                return {'tipo': tipo.upper(),
+                        'sep': sep,
+                        'mlactivo': False,
+                        'mlatributo': multilinea['mlatributo']}
 
         if clave.startswith('zimbra') and clave not in self.attr['deprecated']:
-            return {'tipo': 'ZIMBRA', 'sep': sep, 'mlactivo': False, 'mlatributo': multilinea['mlatributo']}
+            return {'tipo': 'ZIMBRA',
+                    'sep': sep,
+                    'mlactivo': False,
+                    'mlatributo': multilinea['mlatributo']}
 
         if multilinea['mlactivo']:
             return {'tipo': 'LINEA', 'mlactivo': True, 'mlatributo': multilinea['mlatributo']}
 
         log.trace("Error > {0} tendrá tokens por defecto".format(linea.strip()))
         return {'tipo': 'LINEA', 'mlactivo': False, 'mlatributo': multilinea['mlatributo']}
-
-    def _crear_contenido_valido(self, tokens, linea):
-        """Procesa un atributo - valor de cada línea, y lo entrecomilla de ser necesario"""
-        sep = tokens['sep']
-        clave = linea[:sep]
-        valor = linea[sep + 2:]
-
-        valores_no_alpha = sum([1 for x in [c for c in valor] if x not in tuple(ascii_lowercase)])
-        valor = valor if valores_no_alpha == 0 else "'{0}'".format(valor)
-
-        return " {0} {1}".format(clave, valor)
 
     def _crear_contenido_multilinea(self, tokens, linea):
         """Procesa un atributo - valor de cada línea"""
@@ -55,9 +75,6 @@ class Parser:
 
         return clave, valor
 
-    def _crear_contenido_procesal(self, tokens, linea):
-        pass
-
     def parsear_linea(self, contenido, tokens, linea):
         """ Procesa cada linea según el tipo (token) asignado """
         tipo = tokens['tipo']
@@ -66,7 +83,7 @@ class Parser:
             clave, valor = self._crear_contenido_multilinea(tokens, linea)
             contenido['multilinea'][clave] = [valor]
         elif tipo in ['POSIX', 'ZIMBRA']:
-            contenido['comando'] += self._crear_contenido_valido(tokens, linea.strip())
+            contenido['comando'] += _crear_contenido_valido(tokens, linea.strip())
         elif tipo == 'PROCESAL':
             clave, valor = self._crear_contenido_procesal(tokens, linea)
             contenido['procesal'][clave] = valor
@@ -78,6 +95,13 @@ class Parser:
                 log.trace("Contenido sin procesar > {0}".format(linea.strip()))
 
         return contenido
+
+    @abstractmethod
+    def _titulador(self, linea):
+        pass
+
+    def _crear_contenido_procesal(self, tokens, linea):
+        return _crear_clave_valor(tokens, linea)
 
     def procesar(self, contenido):
         """ Realiza el procesamiento de todos los datos disponibles """
@@ -96,6 +120,3 @@ class Parser:
             resultado = self.parsear_linea(resultado, tokens, linea)
 
         return resultado
-
-    def _titulador(self, linea):
-        pass

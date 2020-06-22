@@ -3,7 +3,7 @@ from logging import getLogger
 from json import load, dump
 from os import path
 
-from mzbackup.parseros.parser import Parser
+from mzbackup.parseros.parser import Parser, ParserError
 from mzbackup.parseros.recolector import Recolector
 from mzbackup.utils.europa import AbstractEuropa
 
@@ -37,6 +37,7 @@ class EuropaCos(AbstractEuropa):
                     esquema = load(fichero)
                     resultado = {**esquema, **contenido['zimbraId']}
             else:
+                print(contenido['zimbraId'])
                 resultado = {**contenido['zimbraId']}
 
             with open(ruta, 'w+') as fichero:
@@ -58,15 +59,18 @@ class RecolectorCos(Recolector):
         return linea == ''
 
 
-
 class ParserCos(Parser):
     """Implementa un Parser adecuado para COS"""
 
     def _titulador(self, linea):
-        contenido = linea.split(' ')
-        identificador = contenido[2].strip()
+        if linea is None:
+            raise ParserError("Revise el formato del fichero con los datos de entrada")
+
+        linea = linea.split(' ')
+        identificador = linea[2].strip()
+        titulo = "zmprov cc {}".format(identificador)
         self.identificador = identificador
-        return "zmprov cc {}".format(identificador)
+        return titulo
 
     def _crear_contenido_procesal(self, tokens, linea):
         sep = tokens['sep']

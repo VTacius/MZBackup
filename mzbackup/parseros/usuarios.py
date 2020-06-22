@@ -52,15 +52,8 @@ class ParserUsuario(Parser):
     """Implementa un Parser adecuado para USUARIO"""
 
     def _titulador(self, linea):
-        contenido = linea.split(' ')
-        usuario = contenido[2]
-        self.usuario = contenido[2]
+        linea = linea.split(' ')
+        identificador = linea[2].strip()
         password = 'P@ssw0rd'
-        return "zmprov ca {0} {1}".format(usuario.strip(), password)
-
-    def _crear_contenido_procesal(self, tokens, linea):
-        # TODO: Una implementación real podría ser necesaria
-        sep = tokens['sep']
-        clave = linea[:sep]
-        valor = linea[sep + 2:]
-        return clave, valor
+        titulo = "zmprov ca {0} {1}".format(identificador, password)
+        return titulo

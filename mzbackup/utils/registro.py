@@ -48,7 +48,8 @@ def configurar_log(salida='console', verbosidad=0):
     return log
 
 def get_logger():
+    """Devuelve un logger con la clase personalizada"""
     logging.setLoggerClass(ExtendedLogger)
     logging.addLevelName(TRACE_LEVEL_NUM, "TRACE")
-     
+
     return logging.getLogger('MZBackup')

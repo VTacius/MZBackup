@@ -58,7 +58,8 @@ class PatoRemoto(BasePato):
     """Pese a lo que sugiere su nombre, es una clase base con algunas de las funcionalidades
     base para otras posibles"""
 
-    def __init__(self, objeto, marca, base):
+    def __init__(self, objeto, marca, base, servidor_remoto):
+        self.servidor_remoto = servidor_remoto
         base, directorio, archivo, extension = _analizar_ruta_nueva(objeto, marca, base)
         BasePato.__init__(self, base, directorio, archivo, extension)
 

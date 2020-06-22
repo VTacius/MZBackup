@@ -17,14 +17,14 @@ def guardar_contenido(fichero, contenido):
 
 class AbstractEuropa(ABC):
     """Base abstracta de Europa"""
-    @abstractmethod
-    def _guardar_procesal(self, modificante, identificador, contenido):
-        """Debe implementarse"""
-
     def __init__(self, pato: Pato, modificante):
         self.pato = pato
         self.archivos_creados = []
         self.modificante = modificante
+
+    @abstractmethod
+    def _guardar_procesal(self, modificante, identificador, contenido):
+        """Debe implementarse"""
 
     def _guardar_multilinea(self, modificante, identificador, contenido):
         """Operación para guadar los comandos que configuran los atributos multilinea"""
@@ -37,7 +37,6 @@ class AbstractEuropa(ABC):
             valor = "\\\n".join(valor)
             ingreso = "zmprov {0} {1} {2} {3}".format(modificante, identificador, clave, valor)
             archivos_creados.append(guardar_contenido(str(self.pato), ingreso))
-
         return archivos_creados
 
     def guardar(self, identificador, contenido):
