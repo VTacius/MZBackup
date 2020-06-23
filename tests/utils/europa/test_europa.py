@@ -8,7 +8,7 @@ class Abrir():
     def write(self, contenido):
         self.contenido.append(contenido)
    
-    def __repr___(self):
+    def __as_dict___(self):
         return self.contenido
 
     @classmethod

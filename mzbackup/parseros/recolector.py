@@ -9,7 +9,7 @@ class Recolector(ABC):
     """Recolector génerico que describe un comportamiento adecuado para iterar a tráves de cada
     una de las líneas en los ficheros con contenido"""
 
-    def __init__(self, parser, attrs):
+    def __init__(self, parser, attrs, datables=None):
         self._linea_actual = None
         self._linea_siguiente = None
 
@@ -20,6 +20,7 @@ class Recolector(ABC):
 
         self.parser = parser
         self.destino = None
+        self.datables = datables
 
     def configurar_destino(self, destino):
         """Permite configurar una objeto Europa después de iniciada la clase"""
@@ -44,7 +45,7 @@ class Recolector(ABC):
         self.contenido.append(self._linea_actual)
         self.fin_de_contenido = True
 
-        parser = self.parser(self.attrs)
+        parser = self.parser(self.attrs, self.datables)
         contenido = parser.procesar(self.contenido)
         identificador = parser.identificador
         ficheros_guardados = self.destino.guardar(identificador, contenido)
@@ -63,11 +64,11 @@ class Recolector(ABC):
             self.contenido.append(self._linea_actual)
             self.fin_de_contenido = True
 
-            parser = self.parser(self.attrs)
+            parser = self.parser(self.attrs, self.datables)
             contenido = parser.procesar(self.contenido)
             identificador = parser.identificador
             self.destino.guardar(identificador, contenido)
         else:
-            #Según listas
+            # Según listas
             self.fin_de_contenido = False
             self.contenido.append(self._linea_actual)

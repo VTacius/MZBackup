@@ -15,7 +15,7 @@ class Recolector(TestCase):
 
     def test_es_primera_linea(self):
         from mzbackup.parseros.usuarios import RecolectorUsuarios
-        recolector = RecolectorUsuarios({}, {})
+        recolector = RecolectorUsuarios({}, {}, "/")
         resultado = recolector._es_primera_linea("# name vtacius@dominio.com")
         self.assertTrue(resultado)
 
@@ -25,7 +25,7 @@ class Recolector(TestCase):
         
         from mzbackup.parseros.usuarios import RecolectorUsuarios
         
-        recolector = RecolectorUsuarios(parser, {})
+        recolector = RecolectorUsuarios(parser, {}, "/")
         recolector.configurar_destino(europa)
         recolector.agregar("")
         recolector.agregar("# name usuario@dominio.com")
@@ -33,7 +33,7 @@ class Recolector(TestCase):
 
     def test_no_es_primera_linea(self):
         from mzbackup.parseros.usuarios import RecolectorUsuarios
-        recolector = RecolectorUsuarios({}, {})
+        recolector = RecolectorUsuarios({}, {}, "/")
         resultado = recolector._es_primera_linea("#name vtacius@dominio.com")
         self.assertFalse(resultado)
 
@@ -52,7 +52,7 @@ class RecolectorFuncional(TestCase):
         
         from mzbackup.parseros.usuarios import RecolectorUsuarios
         
-        recolector = RecolectorUsuarios(parser, {})
+        recolector = RecolectorUsuarios(parser, {}, "/")
         recolector.configurar_destino(europa)
         total = 0
         for linea in self.contenido:

@@ -37,7 +37,6 @@ class EuropaCos(AbstractEuropa):
                     esquema = load(fichero)
                     resultado = {**esquema, **contenido['zimbraId']}
             else:
-                print(contenido['zimbraId'])
                 resultado = {**contenido['zimbraId']}
 
             with open(ruta, 'w+') as fichero:

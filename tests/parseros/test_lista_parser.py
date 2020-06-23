@@ -9,7 +9,7 @@ class MetodosAuxiliaresParsero(TestCase):
 
     def test_titulador(self):
         from mzbackup.parseros.listas import ParserLista
-        parser = ParserLista({})
+        parser = ParserLista({}, {})
         titulo = parser._titulador("# distributionList lista@dominio.com memberCount=6")
         self.assertEqual(titulo, "zmprov cdl lista@dominio.com")
 
@@ -30,6 +30,6 @@ class Parsero(TestCase):
         from mzbackup.parseros.listas import ParserLista
         from mzbackup.parseros.listas import atributos
 
-        parser = ParserLista(atributos)
+        parser = ParserLista(atributos, {})
         resultado = parser.procesar(self.contenido)
         self.assertEqual(resultado['comando'], self.respuesta)

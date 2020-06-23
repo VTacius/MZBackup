@@ -13,13 +13,7 @@ class Recolector(TestCase):
         recolector = RecolectorCos("", {})
         resultado = recolector._es_primera_linea("# name 750_NC")
         self.assertTrue(resultado)
-
-    def test_no_es_primera_linea(self):
-        from mzbackup.parseros.usuarios import RecolectorUsuarios
-        recolector = RecolectorUsuarios("", {})
-        resultado = recolector._es_primera_linea("# nombre UsuariosDirectivos")
-        self.assertFalse(resultado)
-
+    
     @mock.patch('mzbackup.utils.pato.Pato')
     @mock.patch('mzbackup.parseros.cos.ParserCos')
     def test_es_ultima_linea(self, parser, pato):

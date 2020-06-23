@@ -32,9 +32,10 @@ class ParserError(Exception):
 
 class Parser(ABC):
     """Parser génericos con las operaciones básicas para procesar el contenido recolectado"""
-    def __init__(self, atributos):
+    def __init__(self, atributos, datables):
         self.identificador = ""
         self.attr = atributos
+        self.datables = datables
 
     def obtener_tipo(self, linea, multilinea):
         """Asigna un tipo (tokens) a cada linea"""
@@ -105,11 +106,16 @@ class Parser(ABC):
 
     def procesar(self, contenido):
         """ Realiza el procesamiento de todos los datos disponibles """
-        titulo = self._titulador(contenido[0])
 
         # Iniciamos el procesamiento con un par de valores en sus predeterminados
-        resultado = {'comando': titulo, 'multilinea': {}, 'procesal': {}}
+        resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
         multilinea = {'mlactivo': False, 'mlatributo': ''}
+
+        if contenido[0] is None:
+            return resultado
+
+        titulo = self._titulador(contenido[0])
+        resultado['comando'] = titulo
 
         for linea in contenido[1:]:
             tokens = self.obtener_tipo(linea, multilinea)

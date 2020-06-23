@@ -1,12 +1,17 @@
 """Punto de entrada para MZBackup"""
-import traceback
 
 from datetime import datetime
 from sys import exit as salida
+from json import loads
 
+import traceback
 import click
 
+
 from mzbackup.parseros.parser import ParserError
+
+from mzbackup.parseros.usuarios import RecolectorUsuarios, EuropaUsuario, ParserUsuario
+from mzbackup.parseros.usuarios import atributos as usuarios_attrs
 
 from mzbackup.parseros.cos import RecolectorCos, atributos as cos_attrs, ParserCos
 from mzbackup.parseros.cos import EuropaCos
@@ -21,7 +26,7 @@ from mzbackup.utils.comandos import ejecutor
 from mzbackup.utils.registro import configurar_log
 from mzbackup.utils.registro import get_logger
 
-class ErrorSistemaLocal(Exception):
+class SistemLocalError(Exception):
     """Error personalizado"""
 
 
@@ -78,7 +83,7 @@ def habilitar_fichero_contenido(pato, comando):
         log.debug("> Creando el fichero %s", str(pato))
         _contenido, error = ejecutor(comando, str(pato))
         if error:
-            raise ErrorSistemaLocal(error)
+            raise SistemLocalError(error)
         archivo = open(str(pato))
     else:
         archivo = pato.fichero
@@ -143,7 +148,7 @@ def cos(**args):
     except ParserError as mistake:
         log.error(mistake)
         salida(1)
-    except ErrorSistemaLocal as mistake:
+    except SistemLocalError as mistake:
         log.error(mistake)
         traceback.print_exc()
         salida(1)
@@ -171,12 +176,56 @@ def listas(**args):
         operacion_principal(args['envio'], pato, europa, recolector, comando)
     except ParserError as mistake:
         log.error(mistake)
-        salida(1)
-    except ErrorSistemaLocal as mistake:
+    except SistemLocalError as mistake:
         log.error(mistake)
         traceback.print_exc()
         salida(1)
 
+
+def listar_dominios():
+    """Consigue los dominios disponibles para el sistema"""
+    comando = "zmprov gad"
+    resultado, error = ejecutor(comando)
+    if error:
+        raise SistemLocalError(error)
+
+    return [x.strip() for x in resultado]
+
+@main.command()
+@opciones
+@click.option('--cos', '-c', type=click.File('r'), required=True)
+def usuarios(**args):
+    """Backup de información de USUARIOS"""
+    log = configurar_log(verbosidad=args['verbose'])
+    log.info("Empiezan operaciones para backup de USUARIOS")
+
+    marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
+    nombre_objeto = 'usuarios'
+
+    pato = {}
+    pato['local'] = Pato(nombre_objeto, marca, args)
+    pato['remoto'] = PatoRemoto(nombre_objeto, marca, args['base'], args['remoto'])
+
+    log.info("Se listan los dominios del sistema")
+    dominios = listar_dominios()
+
+    contenido = args['cos'].read()
+    datables = {'zimbraCOSId': loads(contenido)}
+    for dominio in dominios:
+        comando = "zmprov -l gaa -v {}".format(dominio)
+        pato['local'].archivo = dominio
+        log.info("Se trabaja sobre la lista de usuarios %s", dominio)
+        try:
+            europa = EuropaUsuario(pato['local'], listas_attrs['modificante'])
+            recolector = RecolectorUsuarios(ParserUsuario, usuarios_attrs, datables)
+            operacion_principal(args['envio'], pato, europa, recolector, comando)
+        except ParserError as mistake:
+            log.error(mistake)
+            salida(1)
+        except SistemLocalError as mistake:
+            log.error(mistake)
+            traceback.print_exc()
+            salida(1)
 
 if __name__ == "__main__":
     main()

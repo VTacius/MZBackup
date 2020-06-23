@@ -2,6 +2,7 @@
 from os.path import basename
 from os.path import dirname
 from os.path import split
+from os.path import exists
 from os import mkdir
 
 
@@ -32,7 +33,7 @@ class BasePato:
         self.archivo = archivo
         self.extension = extension
 
-    def __repr__(self):
+    def __as_dict__(self):
         base = self.base + "/" if len(self.base) > 0 else ""
         directorio = self.directorio + "/" if len(self.directorio) > 0 else ""
         archivo = self.archivo if len(self.archivo) > 0 else ""
@@ -40,17 +41,17 @@ class BasePato:
         return {'base': base, 'directorio': directorio, 'archivo': archivo, 'extension': extension}
 
     def __str__(self):
-        config = self.__repr__()
+        config = self.__as_dict__()
         return "{}{}{}{}".format(config['base'], config['directorio'],
                                  config['archivo'], config['extension'])
     def ruta(self):
         """Devuelve la ruta a un fichero completa"""
-        config = self.__repr__()
+        config = self.__as_dict__()
         return "{}{}".format(config['base'], config['directorio'])
 
     def nombre(self):
         """Devuelve el nombre del fichero"""
-        config = self.__repr__()
+        config = self.__as_dict__()
         return "{}{}".format(config['archivo'], config['extension'])
 
 
@@ -85,7 +86,7 @@ class Pato(BasePato):
 
     def habilitar_directorio_local(self):
         """Crea de ser necesario el directorio `base` para nuestro archivo"""
-        if self.debe_crearse:
-            config = self.__repr__()
-            directorio = "{}{}".format(config['base'], config['directorio'])
+        config = self.__as_dict__()
+        directorio = "{}{}".format(config['base'], config['directorio'])
+        if self.debe_crearse and not exists(directorio):
             mkdir(directorio, 0o750)

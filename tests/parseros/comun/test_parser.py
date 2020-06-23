@@ -32,7 +32,7 @@ class Abrir():
     def write(self, contenido):
         self.contenido.append(contenido)
    
-    def __repr___(self):
+    def __as_dict___(self):
         return self.contenido
 
     @classmethod
@@ -57,7 +57,7 @@ class TestCrearContenidoMultilinea(TestCase):
         tokens = {'sep': 18, 'mlatributo': 'atributoMultilinea'}
         linea = "atributoMultilinea: Valor"
        
-        parser = ParserPrueba({})
+        parser = ParserPrueba({}, {})
         resultado = parser._crear_contenido_multilinea(tokens, linea)
         self.assertEqual(resultado, ('atributoMultilinea', 'Valor'))
         
@@ -65,7 +65,7 @@ class TestCrearContenidoMultilinea(TestCase):
         """Es bastante complejo y funcional respecto a como prueba el efectivo parseo de contenido
         multilinea"""
         from mzbackup.parseros.parser import Parser
-        parser = ParserPrueba({})
+        parser = ParserPrueba({}, {})
        
         procesables = [
                        {'linea': "attrMultilinea: Valor", 'tokens': {'tipo': 'MULTILINEA', 'sep': 14, 'mlatributo': 'attrMultilinea', 'mlactivo': True}}, 

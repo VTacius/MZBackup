@@ -20,6 +20,7 @@ atributos = {
 
 class EuropaLista(AbstractEuropa):
     """Implementación de las funcionalidades de guardado para objeto LISTA"""
+
     def _guardar_procesal(self, _modificante, identificador, contenido):
         # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
         if 'zimbraMailForwardingAddress' in contenido:

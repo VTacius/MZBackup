@@ -9,7 +9,7 @@ class MetodosAuxiliaresParsero(TestCase):
 
     def test_titulador(self):
         from mzbackup.parseros.usuarios import ParserUsuario
-        parser = ParserUsuario({})
+        parser = ParserUsuario({}, {})
         resultado = parser._titulador("# name vtacius@dominio.com")
         self.assertEqual(resultado, 'zmprov ca vtacius@dominio.com P@ssw0rd')
 
@@ -30,6 +30,6 @@ class Parsero(TestCase):
         from mzbackup.parseros.usuarios import ParserUsuario
         from mzbackup.parseros.usuarios import atributos
 
-        parser = ParserUsuario(atributos)
+        parser = ParserUsuario(atributos, {'zimbraCOSId': {}})
         resultado = parser.procesar(self.contenido)
         self.assertEqual(resultado['comando'], self.respuesta)
