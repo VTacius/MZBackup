@@ -128,13 +128,15 @@ class Ejecutante(Parser):
             titulo = self._titulador(linea)
             self.resultado['comando'] = titulo
         elif self._es_ultima_linea(self._linea_actual, self._linea_siguiente):
-            print("Acá termina contenido")
             self._ejecutar_ultima_linea()
+            # Reseteamos el resultado a cero
             self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
         else:
             tipo_pasado = self._asignar_tipo(linea, tipo_pasado)
             self._parsear_linea(tipo_pasado, linea)
-
+        
+        # Para primera línea devolvemos el tipo por defecto.
+        # Para la última, devolvemos el tipo de la última linea antes del fin
         return tipo_pasado
 
     def ejecutar(self):

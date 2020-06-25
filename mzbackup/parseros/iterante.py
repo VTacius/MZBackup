@@ -4,6 +4,57 @@ from mzbackup.utils.registro import get_logger
 
 log = get_logger()
 
+class Foreador(ABC):
+    """Esta es la nueva generación"""
+
+    def __init__(self):
+        self._contenido  = None
+        self.linea_actual = None
+        # Linea siguiente esta oculta para crear un get donde le quitemos el salto de línea
+        self._linea_siguiente = None
+        self.fin_de_fichero = False
+
+    @abstractmethod
+    def _inicia_contenido(self):
+        """Da la posibilidad que cada objeto defina como es su Linea de Inicio
+        Por ahora, basta con definir como debe ser un línea"""
+
+    @abstractmethod
+    def _finaliza_contenido(self):
+        """Es la implementación por defecto para la última línea que separa el contenido
+        COS y Usuarios hacen uso de ella"""
+    
+    @property
+    def linea_siguiente(self):
+        return self._linea_siguiente.strip()
+    
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        linea = self._contenido.readline()
+        # A la primera línea del archivo, linea_actual es None aún (El valor de linea_siguiente)
+        # Es hasta la segunda linea del archivo que línea actual tiene algo, el valor de la primera
+        #     linea que tenía linea_siguiente
+        self.linea_actual, self._linea_siguiente = self._linea_siguiente, linea
+
+        # ¿Cuándo acaba esto? 
+        # Cuando linea_actual adquiera la última línea, que poseía linea_siguiente
+        if self._linea_siguiente == "":
+            print("El fin esta cerca")
+            print("comienza ")
+            print(self.linea_actual)
+            print("termina")
+            self.fin_de_fichero = True
+        
+        if self.linea_actual == "":
+            raise StopIteration()
+        
+        return self.linea_actual.strip()
+    
+    def configurar_contenido(self, fichero_contenido):
+        self._contenido = fichero_contenido
+        self._linea_siguiente = self._contenido.readline()
 
 class Iterante(ABC):
     """Iterante génerico que describe un comportamiento adecuado para iterar a tráves de cada
