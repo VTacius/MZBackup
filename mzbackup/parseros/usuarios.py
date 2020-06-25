@@ -51,17 +51,11 @@ class EuropaUsuario(AbstractEuropa):
 class RecolectorUsuarios(Recolector):
     """Implementa un Recolector adecuado para USUARIO"""
 
-    def __init__(self, parser, attrs, datables):
-        Recolector.__init__(self, parser, attrs, datables)
-
     def _es_primera_linea(self, linea: str):
         if linea and linea.startswith("# name "):
             return len(linea.split(' ')) == 3 and linea.split(' ')[2].find('@', 0) > 0
 
         return False
-
-    def _es_final_de_contenido(self, linea: str):
-        return linea == ''
 
 
 class ParserUsuario(Parser):

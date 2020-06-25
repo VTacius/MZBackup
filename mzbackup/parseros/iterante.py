@@ -4,30 +4,61 @@ from mzbackup.utils.registro import get_logger
 
 log = get_logger()
 
-class Foreador(ABC):
-    """Esta es la nueva generación"""
+class Iterante(ABC):
+    """
+    Itera de forma especial sobre el contenido, a fin de proporcionar
+    linea_actual y linea_siguiente
+    """
 
     def __init__(self):
-        self._contenido  = None
+        self._contenido = None
         self.linea_actual = None
         # Linea siguiente esta oculta para crear un get donde le quitemos el salto de línea
         self._linea_siguiente = None
         self.fin_de_fichero = False
+        # ¿Hubo un inicio de contenido en este momento?
+        self._contenido_presente = False
+        self._contenido_finalizado = False
 
     @abstractmethod
-    def _inicia_contenido(self):
-        """Da la posibilidad que cada objeto defina como es su Linea de Inicio
-        Por ahora, basta con definir como debe ser un línea"""
+    def _es_linea_inicio_contenido(self, linea):
+        """
+        Señala el formato que debe tener una linea para considerarse el inicio de contenido
+        """
 
-    @abstractmethod
-    def _finaliza_contenido(self):
-        """Es la implementación por defecto para la última línea que separa el contenido
-        COS y Usuarios hacen uso de ella"""
-    
+    def contenido_inicia(self):
+        """
+        En casi todo los objetos, el inicio de contenido se marca por el hecho que una línea
+        tenga un formato específico
+        """
+        #print("Por acá, revisando si contenido inicia con %s" % self.linea_actual)
+        veredicto = self._es_linea_inicio_contenido(self.linea_actual)
+        self._contenido_presente = veredicto
+        #print("Veredicto: %s" % veredicto)
+        return veredicto
+
+    def _describe_fin_contenido(self):
+        return self.linea_actual == "\n" and self._es_linea_inicio_contenido(self.linea_siguiente)
+
+    def contenido_finaliza(self):
+        """
+        El contenido llegó a su final
+        """
+        veredicto = self._describe_fin_contenido() or self.fin_de_fichero
+        veredicto = veredicto and self._contenido_presente
+        self._contenido_presente = not veredicto
+        return veredicto
+
     @property
     def linea_siguiente(self):
+        """Le quita el salto de línea a self._linea_siguiente"""
         return self._linea_siguiente.strip()
-    
+
+    def configurar_contenido(self, fichero_contenido):
+        """Configura el fichero con los datos, y hace la primera iteración sobre los mismos"""
+        self._contenido = fichero_contenido
+        self._linea_siguiente = self._contenido.readline()
+
     def __iter__(self):
         return self
 
@@ -38,72 +69,12 @@ class Foreador(ABC):
         #     linea que tenía linea_siguiente
         self.linea_actual, self._linea_siguiente = self._linea_siguiente, linea
 
-        # ¿Cuándo acaba esto? 
+        # ¿Cuándo acaba esto?
         # Cuando linea_actual adquiera la última línea, que poseía linea_siguiente
         if self._linea_siguiente == "":
-            print("El fin esta cerca")
-            print("comienza ")
-            print(self.linea_actual)
-            print("termina")
             self.fin_de_fichero = True
-        
+
         if self.linea_actual == "":
             raise StopIteration()
-        
+
         return self.linea_actual.strip()
-    
-    def configurar_contenido(self, fichero_contenido):
-        self._contenido = fichero_contenido
-        self._linea_siguiente = self._contenido.readline()
-
-class Iterante(ABC):
-    """Iterante génerico que describe un comportamiento adecuado para iterar a tráves de cada
-    una de las líneas en los ficheros con contenido
-    Guarda una Línea actual y Línea siguiente, con lo que cual es más fácil analizar
-    el contexto, lo que nos permite decidir con que tipo de línea tratammos"""
-
-    def __init__(self):
-        self._linea_actual = None
-        self._linea_siguiente = None
-
-        self.fin_de_contenido = False
-        self.destino = None
-
-    @abstractmethod
-    def _es_primera_linea(self, linea):
-        """Da la posibilidad que cada objeto defina como es su Linea de Inicio"""
-
-    @abstractmethod
-    def _es_final_de_contenido(self, linea):
-        """Da la posibilidad que cada objeto defina como es su Linea de Fin de Contenido"""
-
-    @abstractmethod
-    def _procesamiento(self, linea, tipo_pasado):
-        pass
-
-    def _es_ultima_linea(self, linea_actual, linea_siguiente):
-        """Es la implementación por defecto para la última línea que separa el contenido
-        COS y Usuarios hacen uso de ella"""
-        es_ultima_linea = self._es_final_de_contenido(linea_actual)
-        es_primera_linea = self._es_primera_linea(linea_siguiente)
-        return es_ultima_linea and es_primera_linea
-
-    def configurar_destino(self, destino):
-        """Permite configurar una objeto Europa después de iniciada la clase"""
-        self.destino = destino
-
-    def _agregar(self, linea, tipo_pasado):
-        """Agrega cada línea de un archivo o contenido para su análisis"""
-        # Este es el tipo mínimo que podemos tener, porque si no tiene tipo
-        tipo = {'mlactivo': False}
-
-        # ¿Es esta la primera línea del archivo?
-        es_inicio = self._linea_siguiente is None
-
-        self._linea_actual, self._linea_siguiente = self._linea_siguiente, linea.rstrip()
-
-        # Con esto, nos aseguramos que esta línea sea la primera linea del archivos.
-        if not es_inicio:
-            tipo = self._procesamiento(self._linea_actual, tipo_pasado)
-
-        return tipo

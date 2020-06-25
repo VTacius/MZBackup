@@ -1,7 +1,7 @@
 """Ejecutor Final del parseado de ficheros"""
 
 from string import ascii_letters, digits
-from mzbackup.parseros.placebo import Parser
+from mzbackup.parseros.iterante import Iterante
 
 atributos = {'posix': ['co', 'ou', 'street', 'ou', 'st', 'description', 'telephoneNumber', 'l',
                        'title', 'company', 'givenName', 'displayName', 'cn', 'sn', 'homePhone',
@@ -68,40 +68,38 @@ def _crear_contenido_multilinea(tokens, linea):
 
     return clave, valor
 
-class Ejecutante(Parser):
-    """Verdadero instrumento de todo el proyecto"""
-    def __init__(self, attr, forzar_ultima_linea=True):
-        self.contenido = None
-        self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
-        self.identificador = None
-        self._forzar_ultima_linea = forzar_ultima_linea
-        Parser.__init__(self, attr)
 
-    # ¿Es acá dónde debería estar?
-    def _crear_contenido_procesal(self, tokens, linea):
-        return _crear_clave_valor(tokens, linea)
+class IteranteUsuario(Iterante):
+    """
+    Implementación de un iterador para tipo USUARIO
+    """
 
-    # Las tres siguientes son implementaciones reales
-    def _titulador(self, linea):
-        linea = linea.split(' ')
-        identificador = linea[2].strip()
-        password = 'P@ssw0rd'
-        titulo = "zmprov ca {0} {1}".format(identificador, password)
-        self.identificador = identificador
-        return titulo
-
-    def _es_primera_linea(self, linea: str):
+    def _es_linea_inicio_contenido(self, linea):
+        """
+        Describe el formato que una linea debe tener para considerarse inicio de contenido
+        """
+        print(linea)
         if linea and linea.startswith("# name "):
-            return len(linea.split(' ')) == 3 and linea.split(' ')[2].find('@', 0) > 0
+            veredicto = len(linea.split(' ')) == 3 and linea.split(' ')[2].find('@', 0) > 0
+            print(veredicto)
+            print(self._linea_siguiente)
+            print(self._linea_siguiente)
+            print(self._contenido_presente)
+            print(self._contenido_presente)
+            return veredicto
 
         return False
 
-    def _es_final_de_contenido(self, linea: str):
-        return linea == ''
+class Ejecutante:
+    """Verdadero instrumento de todo el proyecto"""
+    def __init__(self, tipo, iterador):
+        self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
+        self.identificador = None
+        self.iterador = iterador
+        self.tipo = tipo
 
-    def crear_contenido(self):
-        """Pues eso, que crea el contenido a conveniencia"""
-        self.contenido = CONTENIDO.split("\n")
+    def _crear_contenido_procesal(self, tokens, linea):
+        return _crear_clave_valor(tokens, linea)
 
     def _parsear_linea(self, tokens, linea):
         """ Procesa cada linea según el tipo (token) asignado """
@@ -118,40 +116,34 @@ class Ejecutante(Parser):
             clave = tokens['mlatributo']
             self.resultado['multilinea'][clave].append(linea)
 
-    def _ejecutar_ultima_linea(self):
-        for clave, valor in self.resultado.items():
-            print("\t%s:" % clave)
-            print("%s" % valor)
+    def _titulador(self, linea):
+        linea = linea.split(' ')
+        identificador = linea[2].strip()
+        password = 'P@ssw0rd'
+        titulo = "zmprov ca {0} {1}".format(identificador, password)
+        self.identificador = identificador
+        return titulo
 
-    def _procesamiento(self, linea, tipo_pasado):
-        if self._es_primera_linea(linea):
+    def _procesa_linea(self, linea):
+        if self.iterador.contenido_inicia():
             titulo = self._titulador(linea)
             self.resultado['comando'] = titulo
-        elif self._es_ultima_linea(self._linea_actual, self._linea_siguiente):
-            self._ejecutar_ultima_linea()
-            # Reseteamos el resultado a cero
+        elif self.iterador.contenido_finaliza():
+            # Antes de reiniciar, es necesario guardar esto
+            print(self.resultado)
             self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
+            self.tipo.fin_contenido()
         else:
-            tipo_pasado = self._asignar_tipo(linea, tipo_pasado)
-            self._parsear_linea(tipo_pasado, linea)
-        
-        # Para primera línea devolvemos el tipo por defecto.
-        # Para la última, devolvemos el tipo de la última linea antes del fin
-        return tipo_pasado
+            tokens = self.tipo.obtener_tipo(linea)
+            #print(tokens)
+            self._parsear_linea(tokens, linea)
 
-    def ejecutar(self):
-        """La ejecución propiamente dicha"""
-        # Inicializamos tipo
-        # El tipo por defecto
-        tipo_pasado = {'tipo': 'DEFAULT', 'sep': 0, 'mlactivo': False, 'mlatributo': ''}
-        for contenido in self.contenido:
-            tipo_pasado = self._agregar(contenido, tipo_pasado)
+    def procesar_contenido(self):
+        """Itera sobre el contenido y procesa cada línea"""
+        for linea in self.iterador:
+            #print("En procesar: Esta es la linea %s" % linea)
+            self._procesa_linea(linea)
 
-        if self._forzar_ultima_linea:
-            self._ejecutar_ultima_linea()
-
-if __name__ == "__main__":
-    recolector = Ejecutante(atributos)
-    recolector.crear_contenido()
-    recolector.ejecutar()
-    #recolector.guardar()
+    def configurar_contenido(self, contenido):
+        """Permite configurar el archivo sobre el cual se trabaja"""
+        self.iterador.configurar_contenido(contenido)
