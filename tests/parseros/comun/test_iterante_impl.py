@@ -38,36 +38,36 @@ class TestIteranteImplementacionBasica(TestCase):
     
     def test_contenido_unico(self):
         """El iterador reconoce que fin de fichero también es fin de contenido"""
-        from tests.mock.open import MockOpen
+        from mzbackup.mock import MockOpen
         fichero = MockOpen(CONTENIDO_UNO)
         
         iterante = self.clase()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante._contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
 
         self.assertEqual(resultado, ["FINAL"])
     
     def test_separa_contenido(self):
         """Iterador muestra muestra contenido completo"""  
-        from tests.mock.open import MockOpen
+        from mzbackup.mock import MockOpen
         
         fichero = MockOpen(CONTENIDO_DOS)
         
         iterante = self.clase()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante._contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
 
         # Aunque reconoce 
         self.assertEqual(resultado, ["FINAL"])
     
     def test_separa_contenido_tres(self):
         """Iterador reconoce un fin de contenido y fin de fichero, sin solapar"""
-        from tests.mock.open import MockOpen
+        from mzbackup.mock import MockOpen
         fichero = MockOpen(CONTENIDO_TRES)
         
         iterante = self.clase()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante._contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
 
 
         self.assertEqual(resultado, ["FINAL", "FINAL"])

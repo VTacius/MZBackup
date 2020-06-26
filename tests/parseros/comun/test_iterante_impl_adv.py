@@ -23,12 +23,12 @@ class TestIteranteImplementacionAvanzada(TestCase):
         cls.clase = IterantePrueba 
 
     def test_contenido_unico(self):
-        from tests.mock.open import MockOpen
+        from mzbackup.mock import MockOpen
         fichero = MockOpen(CONTENIDO_UNO)
 
         iterante = self.clase()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante._contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
 
 
         self.assertEqual(resultado, ["FINAL"])

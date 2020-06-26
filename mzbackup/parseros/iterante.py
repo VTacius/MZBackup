@@ -33,6 +33,8 @@ class Iterante(ABC):
         """
         #print("Por acá, revisando si contenido inicia con %s" % self.linea_actual)
         veredicto = self._es_linea_inicio_contenido(self.linea_actual)
+        # TODO: Se cual sea el problema con la captura de salida, el problema acá es que 
+        # linea_actual tiene el salto de línea aún. Eso fue todo
         self._contenido_presente = veredicto
         #print("Veredicto: %s" % veredicto)
         return veredicto
