@@ -11,7 +11,7 @@ INICIO
 clave=: valor
 key=: value
 
-INICIO
+ERROR
 """
 
 CONTENIDO_TRES = """
@@ -27,37 +27,36 @@ key=: value
 class TestIteranteImplementacionBasica(TestCase):
     @classmethod
     def setUpClass(cls):
-        from mzbackup.parseros.iterante import Iterante
+        from mzbackup.parseros.comun.iterador import IteradorFichero
         
-        class IterantePrueba(Iterante):
+        class IterantePrueba(IteradorFichero):
 
-            def _es_linea_inicio_contenido(self, linea):
+            def _linea_inicia_objeto(self, linea):
                 return linea == "INICIO"
 
-        cls.clase = IterantePrueba 
+        cls.Iterador = IterantePrueba 
     
     def test_contenido_unico(self):
         """El iterador reconoce que fin de fichero también es fin de contenido"""
         from mzbackup.mock import MockOpen
         fichero = MockOpen(CONTENIDO_UNO)
         
-        iterante = self.clase()
+        iterante = self.Iterador()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
 
         self.assertEqual(resultado, ["FINAL"])
     
     def test_separa_contenido(self):
-        """Iterador muestra muestra contenido completo"""  
+        """Iterador reconoce un fin de contenido sólo si hubo antes un inicio de recolección"""  
         from mzbackup.mock import MockOpen
         
         fichero = MockOpen(CONTENIDO_DOS)
         
-        iterante = self.clase()
+        iterante = self.Iterador()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
 
-        # Aunque reconoce 
         self.assertEqual(resultado, ["FINAL"])
     
     def test_separa_contenido_tres(self):
@@ -65,9 +64,9 @@ class TestIteranteImplementacionBasica(TestCase):
         from mzbackup.mock import MockOpen
         fichero = MockOpen(CONTENIDO_TRES)
         
-        iterante = self.clase()
+        iterante = self.Iterador()
         iterante.configurar_contenido(fichero)
-        resultado = ["FINAL" for linea in iterante if iterante.contenido_finaliza()] 
+        resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
 
 
         self.assertEqual(resultado, ["FINAL", "FINAL"])

@@ -1,8 +1,8 @@
 """ Implementación de Recolector y Parser para objeto LISTAS"""
 from logging import getLogger
 
-from mzbackup.parseros.parser import Parser
-from mzbackup.parseros.recolector import Recolector
+from mzbackup.parseros.comun.recolector import Recolector
+from mzbackup.parseros.comun.iterador import IteradorFichero
 from mzbackup.utils.europa import AbstractEuropa
 
 log = getLogger('MZBackup')
@@ -18,11 +18,19 @@ atributos = {
     'multilinea': ['zimbraNotes']
 }
 
+def _crear_clave_valor(tokens, linea):
+    """Separa a linea en clave y valor en el punto de separador"""
+    sep = tokens['sep']
+    clave = linea[:sep]
+    valor = linea[sep + 2:]
+    return clave, valor
+
 class EuropaLista(AbstractEuropa):
     """Implementación de las funcionalidades de guardado para objeto LISTA"""
 
     def _guardar_procesal(self, _modificante, identificador, contenido):
         # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
+        # TODO: Refactorizar para que se parezca al de USUARIOS
         if 'zimbraMailForwardingAddress' in contenido:
             valor = contenido['zimbraMailForwardingAddress']
             contenido = "zmprov adl {} {}".format(identificador, valor)
@@ -34,26 +42,23 @@ class EuropaLista(AbstractEuropa):
             self.archivos_creados.append(str(self.pato))
 
 
-class RecolectorListas(Recolector):
-    """Implementa un Recolector adecuado para LISTA"""
-    def _es_primera_linea(self, linea):
-        if linea and (linea.startswith("# distributionList") or linea == "members"):
+class IteradorListas(IteradorFichero):
+    """Implementa un Iterador para un fichero con contenido de LISTAS"""
+
+    def _linea_inicia_objeto(self, linea):
+        if linea and linea.startswith("# distributionList"):
             return len(linea.split(' ')) == 4 and linea.split(' ')[3].find('=') > 0
 
         return False
 
-    def _es_final_de_contenido(self, linea: str):
-        return linea == ""
-
-    def _es_ultima_linea(self, linea_actual, linea_siguiente):
-        """Esta implementación es útil para COS y Usuarios"""
-        es_ultima_linea = self._es_final_de_contenido(linea_actual)
-        es_linea_members = linea_siguiente == "members"
-        return es_ultima_linea and es_linea_members
+    def _describe_final_objeto(self):
+        linea_actual_vacia = self.linea_actual == ""
+        linea_siguiente_members = self.linea_siguiente == "members"
+        return linea_actual_vacia and linea_siguiente_members
 
 
-class ParserLista(Parser):
-    """Implementa un Parser adecuado para LISTA"""
+class RecolectorListas(Recolector):
+    """Implementa un Recolector adecuado para LISTA"""
 
     def _titulador(self, linea):
         linea = linea.split(' ')
@@ -61,3 +66,6 @@ class ParserLista(Parser):
         titulo = "zmprov cdl {0}".format(identificador)
         self.identificador = identificador
         return titulo
+
+    def _crear_contenido_procesal(self, tokens, linea):
+        return _crear_clave_valor(tokens, linea)

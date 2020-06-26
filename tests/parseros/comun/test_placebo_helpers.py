@@ -3,7 +3,7 @@ from unittest import TestCase
 class TestHelperTokenizador(TestCase):
 
     def test_tokenizador(self):
-        from mzbackup.parseros.placebo import tokenizador
+        from mzbackup.parseros.comun.tipo import tokenizador
         linea = "c: valor"
         resultado = tokenizador(linea)
         
@@ -13,7 +13,7 @@ class TestHelperTokenizador(TestCase):
         self.assertDictEqual(esperado, resultado)
     
     def test_no_es_clave_valor(self):
-        from mzbackup.parseros.placebo import tokenizador
+        from mzbackup.parseros.comun.tipo import tokenizador
         linea = "Comentario externo que de algo servira"
         resultado = tokenizador(linea)
         
@@ -23,7 +23,7 @@ class TestHelperTokenizador(TestCase):
         self.assertDictEqual(esperado, resultado)
     
     def test_no_valor_vacio(self):
-        from mzbackup.parseros.placebo import tokenizador
+        from mzbackup.parseros.comun.tipo import tokenizador
         linea = "c:"
         resultado = tokenizador(linea)
         
@@ -35,7 +35,7 @@ class TestHelperTokenizador(TestCase):
 class TestHelperTipeador(TestCase):
 
     def test_tipeador(self):
-        from mzbackup.parseros.placebo import tipeador
+        from mzbackup.parseros.comun.tipo import tipeador
         linea = "key: value"
         tokens = {'sep': 3, 'es_clave_valor': True, 'clave': 'key', 'valor': 'value',
                   'linea': linea}
@@ -48,7 +48,7 @@ class TestHelperTipeador(TestCase):
         self.assertDictEqual(esperado, resultado) 
     
     def test_tipeador_multilinea(self):
-        from mzbackup.parseros.placebo import tipeador
+        from mzbackup.parseros.comun.tipo import tipeador
         linea = "keyMulti: value"
         tokens = {'sep': 9, 'es_clave_valor': True, 'clave': 'keyMulti', 'valor': 'value',
                   'linea': linea}
@@ -61,7 +61,7 @@ class TestHelperTipeador(TestCase):
         self.assertDictEqual(esperado, resultado) 
     
     def test_tipeador_en_multilinea(self):
-        from mzbackup.parseros.placebo import tipeador
+        from mzbackup.parseros.comun.tipo import tipeador
         linea = "Lugar donde trabaja. (Algo que sea parte de una firma"
         tokens = {'sep': -1, 'es_clave_valor': False, 'clave': '', 'valor': '',
                   'linea': linea}
@@ -75,7 +75,7 @@ class TestHelperTipeador(TestCase):
         self.assertDictEqual(esperado, resultado) 
     
     def test_tipeador_en_default(self):
-        from mzbackup.parseros.placebo import tipeador
+        from mzbackup.parseros.comun.tipo import tipeador
 
         resultado = tipeador()
         

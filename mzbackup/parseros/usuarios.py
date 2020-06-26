@@ -1,13 +1,12 @@
 """ Implementación de Recolector y Parser para objeto USUARIO"""
 from logging import getLogger
 
-from mzbackup.parseros.parser import Parser, ParserError, _crear_clave_valor
-from mzbackup.parseros.recolector import Recolector
+from mzbackup.parseros.comun.recolector import Recolector
+from mzbackup.parseros.comun.iterador import IteradorFichero
 from mzbackup.utils.europa import AbstractEuropa, guardar_contenido
 
 log = getLogger('MZBackup')
 
-# REVISAR: ¿zimbraMailHost como deprecated?
 atributos = {'posix': ['co', 'ou', 'street', 'ou', 'st', 'description', 'telephoneNumber', 'l',
                        'title', 'company', 'givenName', 'displayName', 'cn', 'sn', 'homePhone',
                        'mobile', 'initials', 'o', 'ou', 'st'],
@@ -35,6 +34,12 @@ atributos = {'posix': ['co', 'ou', 'street', 'ou', 'st', 'description', 'telepho
                             'zimbraPrefOutOfOfficeReply', 'zimbraPrefOutOfOfficeExternalReply',
                             'zimbraNotes']}
 
+def _crear_clave_valor(tokens, linea):
+    """Separa a linea en clave y valor en el punto de separador"""
+    sep = tokens['sep']
+    clave = linea[:sep]
+    valor = linea[sep + 2:]
+    return clave, valor
 
 class EuropaUsuario(AbstractEuropa):
     """Implementación de las funcionalidades de guardado para objeto LISTA"""
@@ -48,22 +53,24 @@ class EuropaUsuario(AbstractEuropa):
             self.archivos_creados.append(archivo)
 
 
-class RecolectorUsuarios(Recolector):
-    """Implementa un Recolector adecuado para USUARIO"""
+class IteradorUsuarios(IteradorFichero):
+    """Implementa un Iterador para un fichero con contenido de USUARIOS"""
 
-    def _es_primera_linea(self, linea: str):
+    def _linea_inicia_objeto(self, linea):
         if linea and linea.startswith("# name "):
             return len(linea.split(' ')) == 3 and linea.split(' ')[2].find('@', 0) > 0
 
         return False
 
 
-class ParserUsuario(Parser):
-    """Implementa un Parser adecuado para USUARIO"""
+class RecolectorUsuario(Recolector):
+    """Implementa un Recolector para un fichero con contenido de USUARIOS"""
+
+    def __init__(self, tipo, iterador, datables):
+        self.datables = datables
+        Recolector.__init__(self, tipo, iterador)
 
     def _titulador(self, linea):
-        if linea is None:
-            raise ParserError("Revise el formato del fichero con los datos de entrada")
         linea = linea.split(' ')
         identificador = linea[2].strip()
         password = 'P@ssw0rd'
@@ -79,3 +86,7 @@ class ParserUsuario(Parser):
 
         valor = self.datables['zimbraCOSId'].get(valor, None)
         return clave, valor
+
+
+class ParserError(Exception):
+    """Error personalizado para operaciones de Parseo"""

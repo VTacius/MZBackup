@@ -1,12 +1,11 @@
-""" Implementación de Recolector y Parser para objeto COS"""
+""" TODO: Implementación de Recolector y Parser para objeto COS"""
 from logging import getLogger
 from json import load, dump
 from os import path
 
-from mzbackup.parseros.parser import Parser, ParserError
-from mzbackup.parseros.recolector import Recolector
-from mzbackup.utils.europa import AbstractEuropa
-
+from mzbackup.parseros.comun.recolector import Recolector
+from mzbackup.parseros.comun.iterador import IteradorFichero
+from mzbackup.utils.europa import AbstractEuropa, guardar_contenido
 
 log = getLogger('MZBackup')
 
@@ -46,19 +45,17 @@ class EuropaCos(AbstractEuropa):
             self.archivos_creados.append(ruta)
 
 
-class RecolectorCos(Recolector):
-    """Implementa un Recolector adecuado para COS"""
-    def _es_primera_linea(self, linea):
+class IteradorCos(IteradorFichero):
+    """Implementa un Iterador para un fichero con contenido de COS"""
+
+    def _linea_inicia_objeto(self, linea):
         if linea and linea.startswith("# name "):
             return len(linea.split(' ')) == 3 and linea.split(' ')[2].find(' ', 0) == -1
 
         return False
 
-    def _es_final_de_contenido(self, linea):
-        return linea == ''
 
-
-class ParserCos(Parser):
+class RecolectorCos(Recolector):
     """Implementa un Parser adecuado para COS"""
 
     def _titulador(self, linea):
@@ -72,6 +69,7 @@ class ParserCos(Parser):
         return titulo
 
     def _crear_contenido_procesal(self, tokens, linea):
+        # TODO: ¿Podría usar _crear_clave_valor
         sep = tokens['sep']
         clave = linea[:sep]
         valor = linea[sep + 2:]
@@ -82,3 +80,6 @@ class ParserCos(Parser):
         # El ID es la nueva clave, el valor nuestro identificador global
         resultado = {valor: self.identificador}
         return clave, resultado
+
+class ParserError(Exception):
+    """Error personalizado para operaciones de Parseo"""

@@ -23,7 +23,7 @@ def tipeador(tipeado="DEFAULT", multilinea_activo=False, mlattr="", sep=-1, **ar
     return tipo
 
 
-class Tipeador:
+class Tipo:
     """Considera el tipo de cada línea para tratarla como es debido"""
 
     def __init__(self, attrs):

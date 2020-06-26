@@ -2,7 +2,7 @@ class MockOpen:
     """Mock a open"""
     
     def __init__(self, contenido):
-        self.contenido = contenido.strip().split("\n")
+        self.contenido = contenido.rstrip().split("\n")
         self.tamanio = len(self.contenido)
         self.iterador = 0
 

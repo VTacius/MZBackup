@@ -27,9 +27,9 @@ cn: Lorenzo Cerón Díaz
 class TestPlacebo(TestCase):
 
     def test_obtener_tipo(self):
-        from mzbackup.parseros.placebo import Tipeador
+        from mzbackup.parseros.comun.tipo import Tipo
 
-        tipo = Tipeador(atributos)
+        tipo = Tipo(atributos)
         resultado = tipo.obtener_tipo("cn: Alexander Ortíz")
 
         esperado = {'tipo': "POSIX", 'mlactivo': False, 'sep': 2, 'mlatributo': '',
@@ -38,9 +38,9 @@ class TestPlacebo(TestCase):
         self.assertDictEqual(esperado, resultado)
 
     def test_tipo_multilinea(self):
-        from mzbackup.parseros.placebo import Tipeador
+        from mzbackup.parseros.comun.tipo import Tipo
 
-        tipo = Tipeador(atributos)
+        tipo = Tipo(atributos)
         resultado = tipo.obtener_tipo("zimbraMailSieveScript: allow")
 
         esperado = {'tipo': "MULTILINEA", 'mlactivo': True, 'sep': 21, 
@@ -50,9 +50,9 @@ class TestPlacebo(TestCase):
         self.assertDictEqual(esperado, resultado)
 
     def test_tipo_en_multilinea(self):
-        from mzbackup.parseros.placebo import Tipeador
+        from mzbackup.parseros.comun.tipo import Tipo
 
-        tipo = Tipeador(atributos)
+        tipo = Tipo(atributos)
         tipo.obtener_tipo("zimbraMailSieveScript: allow")
         resultado = tipo.obtener_tipo("    filter {}")
 
@@ -63,9 +63,9 @@ class TestPlacebo(TestCase):
         self.assertDictEqual(esperado, resultado)
 
     def test_tipo_en_multilinea_termina(self):
-        from mzbackup.parseros.placebo import Tipeador
+        from mzbackup.parseros.comun.tipo import Tipo
 
-        tipo = Tipeador(atributos)
+        tipo = Tipo(atributos)
         tipo.obtener_tipo("zimbraMailSieveScript: allow")
         tipo.obtener_tipo("    filter 'UNO' {}")
         tipo.obtener_tipo("    filter 'DOS' {}")
