@@ -1,46 +1,8 @@
 """Ejecutor Final del parseado de ficheros"""
 
 from abc import abstractmethod, ABC
-from string import ascii_letters, digits
-from mzbackup.parseros.comun.iterador import IteradorFichero
-
-CONTENIDO = """# name vtacius@dominio.com
-cn: Alexander Ortíz
-zimbraPrefMailSignature: _________________________________________________________
-Alexander Ortíz - Unidad de Redes y Seguridad Informática
-Dirección de Tecnología
-Companía Central
-
-zimbraPrefMailSignatureStyle: internet
-
-# name kpena@dominio.com
-"""
-
-def _crear_clave_valor(tokens, linea):
-    """Separa a linea en clave y valor en el punto de separador"""
-    sep = tokens['sep']
-    clave = linea[:sep]
-    valor = linea[sep + 2:]
-    return clave, valor
-
-
-def _crear_contenido_valido(tokens, linea):
-    """Procesa un atributo - valor de cada línea, y lo entrecomilla de ser necesario"""
-    clave, valor = _crear_clave_valor(tokens, linea)
-
-    valores_no_ascii = filter(lambda x: x not in ascii_letters + digits, valor)
-    necesita_espacios = len(list(valores_no_ascii)) > 0
-    valor = "'{0}'".format(valor)if necesita_espacios else valor
-
-    return " {0} {1}".format(clave, valor)
-
-def _crear_contenido_multilinea(tokens, linea):
-    """Procesa un atributo - valor de cada línea"""
-    sep = tokens['sep']
-    clave = tokens['mlatributo']
-    valor = linea[sep + 2:]
-
-    return clave, valor
+from mzbackup.parseros.comun.helpers import _crear_contenido_valido
+from mzbackup.parseros.comun.helpers import _crear_contenido_multilinea
 
 
 class Recolector(ABC):
@@ -49,12 +11,13 @@ class Recolector(ABC):
         self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
         self.identificador = None
         self.iterador = iterador
+        self.europa = None
         self.tipo = tipo
 
     @abstractmethod
     def _crear_contenido_procesal(self, tokens, linea):
         """Crea el contenido para atributos procesales"""
-    
+
     def _parsear_linea(self, tokens, linea):
         """ Procesa cada linea según el tipo (token) asignado """
         tipo = tokens['tipo']
@@ -82,19 +45,22 @@ class Recolector(ABC):
             titulo = self._titulador(linea)
             self.resultado['comando'] = titulo
         elif self.iterador.fin_objeto():
+            self.europa.guardar("ma", self.resultado)
             # Antes de reiniciar, es necesario guardar esto
-            print(self.resultado)
             self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
             self.tipo.fin_contenido()
         else:
             tokens = self.tipo.obtener_tipo(linea)
             self._parsear_linea(tokens, linea)
 
-    def procesar_contenido(self):
-        """Itera sobre el contenido y procesa cada línea"""
-        for linea in self.iterador:
-            self._procesa_linea(linea)
+    def configurar_destino(self, destino):
+        self.europa = destino
 
     def configurar_contenido(self, contenido):
         """Permite configurar el archivo sobre el cual se trabaja"""
         self.iterador.configurar_contenido(contenido)
+    
+    def procesar_contenido(self):
+        """Itera sobre el contenido y procesa cada línea"""
+        for linea in self.iterador:
+            self._procesa_linea(linea)

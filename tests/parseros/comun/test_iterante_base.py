@@ -1,19 +1,6 @@
 from unittest import TestCase
 from unittest import mock
-
-CONTENIDO_VACIO = """
-"""
-
-CONTENIDO_GENERICO = """
-LINEA UNO
-LINEA DOS
-"""
-
-CONTENIDO_UNO = """
-# name vtacius@dominio.com
-
-# name kpena@dominio.com
-"""
+from unittest.mock import patch, mock_open
 
 
 class TestIterante(TestCase):
@@ -28,45 +15,59 @@ class TestIterante(TestCase):
         cls.Iterador = IteradorPrueba 
 
     def test_iterador_funciona(self):
-        from mzbackup.mock import MockOpen
-        fichero = MockOpen(CONTENIDO_UNO)
+        contenido = mock_open(read_data=CONTENIDO_UNO.strip())
+        with patch("builtins.open", contenido, create=True):
+            fichero = open('NADA')
+            iterante = self.Iterador()
+            iterante.configurar_contenido(fichero)
+            resultado = [linea for linea in iterante]
 
-        iterante = self.Iterador()
-        iterante.configurar_contenido(fichero)
-        resultado = [linea for linea in iterante]
-
-        self.assertEqual(len(resultado), 4)
+            self.assertEqual(len(resultado), 3)
     
     def test_iterador_contenido_correcto(self):
-        from mzbackup.mock import MockOpen
-        fichero = MockOpen(CONTENIDO_UNO)
+        contenido = mock_open(read_data=CONTENIDO_UNO.strip())
+        with patch("builtins.open", contenido, create=True):
+            fichero = open('NADA')
+            iterante = self.Iterador()
+            iterante.configurar_contenido(fichero)
+            resultado = [linea for linea in iterante]
 
-        iterante = self.Iterador()
-        iterante.configurar_contenido(fichero)
-        resultado = [linea for linea in iterante]
-
-        self.assertEqual(resultado, CONTENIDO_UNO.rstrip().split("\n"))
+            self.assertEqual(resultado, CONTENIDO_UNO.strip().split("\n"))
 
     def test_iterador_terminar_con_vacio(self):
-        """En realidad no esta tan vacío, pero es por culpa del contenido que puedo poner"""
-        from mzbackup.mock import MockOpen
-        fichero = MockOpen(CONTENIDO_VACIO)
+        """Fichero vacío, no hay mayor problema: No hay contenido"""
+        contenido = mock_open(read_data=CONTENIDO_VACIO.strip())
+        with patch("builtins.open", contenido, create=True):
+            fichero = open('NADA')
+            iterante = self.Iterador()
+            iterante.configurar_contenido(fichero)
+            resultado = [linea for linea in iterante]
 
-        iterante = self.Iterador()
-        iterante.configurar_contenido(fichero)
-        resultado = [linea for linea in iterante]
-
-        self.assertEqual(resultado, [''])
+            self.assertEqual(resultado, [])
 
     def test_iterador_siguiente_linea(self):
-        """En realidad no esta tan vacío, pero es por culpa del contenido que puedo poner"""
-        from mzbackup.mock import MockOpen
-        fichero = MockOpen(CONTENIDO_GENERICO)
+        """A la primera iteración, se ha configurado linea_actual y linea_siguiente correctamente"""
+        contenido = mock_open(read_data=CONTENIDO_GENERICO.strip())
+        with patch("builtins.open", contenido, create=True):
+            fichero = open('NADA')
+            iterante = self.Iterador()
+            iterante.configurar_contenido(fichero)
+            linea_actual = next(iterante)
+            linea_siguiente = iterante.linea_siguiente
 
-        iterante = self.Iterador()
-        iterante.configurar_contenido(fichero)
-        next(iterante)
-        linea_actual = next(iterante)
-        linea_siguiente = iterante.linea_siguiente
+            self.assertEqual((linea_actual, linea_siguiente), ("LINEA UNO", "LINEA DOS"))
 
-        self.assertEqual((linea_actual, linea_siguiente), ("LINEA UNO", "LINEA DOS"))
+
+CONTENIDO_VACIO = """
+"""
+
+CONTENIDO_GENERICO = """
+LINEA UNO
+LINEA DOS
+"""
+
+CONTENIDO_UNO = """
+# name vtacius@dominio.com
+
+# name kpena@dominio.com
+"""

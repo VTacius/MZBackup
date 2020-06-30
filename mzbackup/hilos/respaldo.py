@@ -8,6 +8,7 @@ from mzbackup.utils.comandos import ejecutor
 
 log = getLogger('MZBackup')
 
+
 class Respaldo(Thread):
     """Crea el respaldo para cada usuario en cola"""
 
@@ -28,5 +29,5 @@ class Respaldo(Thread):
             salida, error = ejecutor(comando)
             if self.cola_envio and error is None:
                 self.cola_envio.put(archivo)
-             
+
             self.cola.task_done()

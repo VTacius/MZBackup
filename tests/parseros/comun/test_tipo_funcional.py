@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-class TestTiposLista(TestCase):
+class TestTipoFuncional(TestCase):
 
-    def test_es_primera_linea_caso3(self):
+    def test_asigna_tipo(self):
         from mzbackup.parseros.comun.tipo import Tipo
         from mzbackup.parseros.listas import atributos
         contenido = [

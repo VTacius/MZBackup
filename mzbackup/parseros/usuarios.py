@@ -3,7 +3,8 @@ from logging import getLogger
 
 from mzbackup.parseros.comun.recolector import Recolector
 from mzbackup.parseros.comun.iterador import IteradorFichero
-from mzbackup.utils.europa import AbstractEuropa, guardar_contenido
+from mzbackup.utils.europa import Europa, guardar_contenido
+from mzbackup.parseros.comun.helpers import _crear_clave_valor
 
 log = getLogger('MZBackup')
 
@@ -34,21 +35,16 @@ atributos = {'posix': ['co', 'ou', 'street', 'ou', 'st', 'description', 'telepho
                             'zimbraPrefOutOfOfficeReply', 'zimbraPrefOutOfOfficeExternalReply',
                             'zimbraNotes']}
 
-def _crear_clave_valor(tokens, linea):
-    """Separa a linea en clave y valor en el punto de separador"""
-    sep = tokens['sep']
-    clave = linea[:sep]
-    valor = linea[sep + 2:]
-    return clave, valor
 
-class EuropaUsuario(AbstractEuropa):
+class EuropaUsuario(Europa):
     """Implementación de las funcionalidades de guardado para objeto LISTA"""
 
     def _guardar_procesal(self, _modificante, identificador, contenido):
         if 'zimbraCOSId' in contenido:
             self.pato.archivo = 'zimbraCOSId'
             self.pato.extension = "cmd"
-            contenido = "zmprov sac {} {}".format(identificador, contenido['zimbraCOSId'])
+            valor = contenido['zimbraCOSId']
+            contenido = "zmprov sac {} {}".format(identificador, valor)
             archivo = guardar_contenido(str(self.pato), contenido)
             self.archivos_creados.append(archivo)
 

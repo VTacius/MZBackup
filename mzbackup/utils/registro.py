@@ -11,6 +11,7 @@ LEVEL = {'CRITICAL': 50,
          'DEBUG': 10,
          'TRACE': TRACE_LEVEL_NUM}
 
+
 class ExtendedLogger(logging.Logger):
     """Añade un nivel trace"""
     def __init__(self, name):
@@ -24,6 +25,7 @@ class ExtendedLogger(logging.Logger):
 
 logging.setLoggerClass(ExtendedLogger)
 logging.addLevelName(TRACE_LEVEL_NUM, "TRACE")
+
 
 def configurar_log(salida='console', verbosidad=0):
     """Helper que facilita la configuración en la raíz de la aplicación"""
@@ -46,6 +48,7 @@ def configurar_log(salida='console', verbosidad=0):
     log.addHandler(handler)
 
     return log
+
 
 def get_logger():
     """Devuelve un logger con la clase personalizada"""

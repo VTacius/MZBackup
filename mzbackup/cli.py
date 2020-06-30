@@ -26,6 +26,7 @@ from mzbackup.utils.comandos import ejecutor
 from mzbackup.utils.registro import configurar_log
 from mzbackup.utils.registro import get_logger
 
+
 class SistemLocalError(Exception):
     """Error personalizado"""
 
@@ -191,6 +192,7 @@ def listar_dominios():
 
     return [x.strip() for x in resultado]
 
+
 @main.command()
 @opciones
 @click.option('--cos', '-c', type=click.File('r'), required=True)
@@ -226,6 +228,7 @@ def usuarios(**args):
             log.error(mistake)
             traceback.print_exc()
             salida(1)
+
 
 if __name__ == "__main__":
     main()

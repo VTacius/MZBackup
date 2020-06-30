@@ -24,7 +24,7 @@ email: loceron2008@gmail.com, lceron@dominio.com
 cn: Lorenzo Cerón Díaz
 """
 
-class TestPlacebo(TestCase):
+class TestTipo(TestCase):
 
     def test_obtener_tipo(self):
         from mzbackup.parseros.comun.tipo import Tipo
@@ -41,11 +41,11 @@ class TestPlacebo(TestCase):
         from mzbackup.parseros.comun.tipo import Tipo
 
         tipo = Tipo(atributos)
-        resultado = tipo.obtener_tipo("zimbraMailSieveScript: allow")
+        resultado = tipo.obtener_tipo('zimbraMailSieveScript: require ["fileinto", "reject", "tag", "flag"];')
 
         esperado = {'tipo': "MULTILINEA", 'mlactivo': True, 'sep': 21, 
-                    'mlatributo': 'zimbraMailSieveScript', 'clave': 'zimbraMailSieveScript', 
-                    'valor': 'allow'}
+                    'mlatributo': 'zimbraMailSieveScript', 'clave': '', 
+                    'valor': 'require ["fileinto", "reject", "tag", "flag"];'}
 
         self.assertDictEqual(esperado, resultado)
 
@@ -66,11 +66,17 @@ class TestPlacebo(TestCase):
         from mzbackup.parseros.comun.tipo import Tipo
 
         tipo = Tipo(atributos)
-        tipo.obtener_tipo("zimbraMailSieveScript: allow")
-        tipo.obtener_tipo("    filter 'UNO' {}")
-        tipo.obtener_tipo("    filter 'DOS' {}")
-        resultado = tipo.obtener_tipo("zimbraFeaturePortalEnabled: FALSE")
-        esperado = {'tipo': "ZIMBRA", 'mlactivo': False, 'sep': 26, 
-                    'mlatributo': '', 'clave': 'zimbraFeaturePortalEnabled', 'valor': 'FALSE'}
-
+        tipo.obtener_tipo('zimbraMailSieveScript: require ["fileinto", "reject", "tag", "flag"];')
+        tipo.obtener_tipo("")
+        tipo.obtener_tipo('# Flujo de actividad')
+        tipo.obtener_tipo('disabled_if anyof (bulk,')
+        tipo.obtener_tipo('  list) {')
+        tipo.obtener_tipo('    fileinto "Flujo de actividad";')
+        tipo.obtener_tipo('}')
+        
+        esperado = {'tipo': "ZIMBRA", 'mlactivo': False, 'sep': 28, 
+                    'mlatributo': '', 'clave': 'zimbraMailSignatureMaxLength', 'valor': '10240'}
+        
+        resultado = tipo.obtener_tipo("zimbraMailSignatureMaxLength: 10240")
         self.assertDictEqual(esperado, resultado)
+

@@ -56,7 +56,7 @@ class TestHelperTipeador(TestCase):
         resultado = tipeador('MULTILINEA', True, tokens['clave'], **tokens)
         
         esperado = {'tipo': "MULTILINEA", 'mlactivo': True, 'sep': 9, 'mlatributo': 'keyMulti',
-                    'clave': 'keyMulti', 'valor': 'value'}
+                    'clave': '', 'valor': 'value'}
 
         self.assertDictEqual(esperado, resultado) 
     

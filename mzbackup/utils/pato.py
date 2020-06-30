@@ -44,6 +44,7 @@ class BasePato:
         config = self.__as_dict__()
         return "{}{}{}{}".format(config['base'], config['directorio'],
                                  config['archivo'], config['extension'])
+
     def ruta(self):
         """Devuelve la ruta a un fichero completa"""
         config = self.__as_dict__()

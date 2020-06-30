@@ -15,7 +15,7 @@ def guardar_contenido(fichero, contenido):
     return fichero
 
 
-class AbstractEuropa(ABC):
+class Europa(ABC):
     """Base abstracta de Europa"""
     def __init__(self, pato: Pato, modificante):
         self.pato = pato

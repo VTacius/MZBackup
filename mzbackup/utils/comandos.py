@@ -34,8 +34,8 @@ def ejecutor(comando, salida=None):
 
     try:
         error = _ejecutar(split(comando), agregar)
-    except Exception as misktake:
-        error = misktake
+    except FileNotFoundError:
+        error = "Comando no encontrado"
 
     if not es_contenido:
         salida.close()

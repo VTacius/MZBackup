@@ -3,7 +3,8 @@ from logging import getLogger
 
 from mzbackup.parseros.comun.recolector import Recolector
 from mzbackup.parseros.comun.iterador import IteradorFichero
-from mzbackup.utils.europa import AbstractEuropa
+from mzbackup.utils.europa import Europa, guardar_contenido
+from mzbackup.parseros.comun.helpers import _crear_clave_valor
 
 log = getLogger('MZBackup')
 
@@ -18,28 +19,19 @@ atributos = {
     'multilinea': ['zimbraNotes']
 }
 
-def _crear_clave_valor(tokens, linea):
-    """Separa a linea en clave y valor en el punto de separador"""
-    sep = tokens['sep']
-    clave = linea[:sep]
-    valor = linea[sep + 2:]
-    return clave, valor
 
-class EuropaLista(AbstractEuropa):
+class EuropaLista(Europa):
     """Implementación de las funcionalidades de guardado para objeto LISTA"""
 
     def _guardar_procesal(self, _modificante, identificador, contenido):
         # Recordar que pueden haber varios procesales que pueden requerir varias implementaciones
-        # TODO: Refactorizar para que se parezca al de USUARIOS
         if 'zimbraMailForwardingAddress' in contenido:
-            valor = contenido['zimbraMailForwardingAddress']
-            contenido = "zmprov adl {} {}".format(identificador, valor)
             self.pato.archivo = 'zimbraMailForwardingAddress'
             self.pato.extension = "cmd"
-            fichero = open(str(self.pato), 'a')
-            fichero.write(contenido)
-            fichero.write("\n\n")
-            self.archivos_creados.append(str(self.pato))
+            valor = contenido['zimbraMailForwardingAddress']
+            contenido = "zmprov adl {} {}".format(identificador, valor)
+            archivo = guardar_contenido(str(self.pato), contenido)
+            self.archivos_creados.append(archivo)
 
 
 class IteradorListas(IteradorFichero):

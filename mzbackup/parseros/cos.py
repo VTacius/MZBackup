@@ -5,7 +5,8 @@ from os import path
 
 from mzbackup.parseros.comun.recolector import Recolector
 from mzbackup.parseros.comun.iterador import IteradorFichero
-from mzbackup.utils.europa import AbstractEuropa, guardar_contenido
+from mzbackup.utils.europa import Europa
+from mzbackup.parseros.comun.helpers import _crear_clave_valor
 
 log = getLogger('MZBackup')
 
@@ -18,7 +19,7 @@ atributos = {'posix': ['cn', 'description'],
              'multilinea': ['zimbraNotes']}
 
 
-class EuropaCos(AbstractEuropa):
+class EuropaCos(Europa):
     """Establece métodos de guardado para objeto COS"""
 
     def _guardar_procesal(self, _modificante, identificador, contenido):
@@ -69,17 +70,14 @@ class RecolectorCos(Recolector):
         return titulo
 
     def _crear_contenido_procesal(self, tokens, linea):
-        # TODO: ¿Podría usar _crear_clave_valor
-        sep = tokens['sep']
-        clave = linea[:sep]
-        valor = linea[sep + 2:]
-
+        clave, valor = _crear_clave_valor(tokens, linea)
         # Recuerda que podría haber muchos atributos procesal que requerirían
         # otras tantas implementaciones
         # Por ahora, esta es un poco sencilla:
         # El ID es la nueva clave, el valor nuestro identificador global
         resultado = {valor: self.identificador}
         return clave, resultado
+
 
 class ParserError(Exception):
     """Error personalizado para operaciones de Parseo"""

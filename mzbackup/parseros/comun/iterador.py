@@ -1,6 +1,7 @@
 """Definición genérica del Iterador de Fichero"""
 from abc import abstractmethod, ABC
 
+
 class IteradorFichero(ABC):
     """Este va a iterar mejor que ninguno"""
     def __init__(self):
