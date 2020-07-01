@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+
 class TestTipoFuncional(TestCase):
 
     def test_asigna_tipo(self):
@@ -13,8 +14,8 @@ class TestTipoFuncional(TestCase):
             "uid: usi_dtic",
             "zimbraMailForwardingAddress: rgarcia@salud.gob.sv",
         ]
-            
+
         tipeador = Tipo(atributos)
         resultado = [tipeador.obtener_tipo(tipo).get('tipo') for tipo in contenido]
-        
+
         self.assertEqual(resultado, ["POSIX", "POSIX", "DEFAULT", "DEFAULT", "DEFAULT", "PROCESAL"])

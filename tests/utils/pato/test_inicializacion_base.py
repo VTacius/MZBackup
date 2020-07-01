@@ -1,7 +1,8 @@
 from unittest import TestCase
 
+
 class TestInicializacionBase(TestCase):
-    
+
     def test_inicializar_base(self):
         from mzbackup.utils.pato import BasePato
 

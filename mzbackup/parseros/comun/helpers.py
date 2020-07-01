@@ -2,6 +2,10 @@
 from string import ascii_letters, digits
 
 
+class ParserError(Exception):
+    """Error personalizado para operaciones de Parseo"""
+
+
 def _crear_clave_valor(tokens, linea):
     """Separa a linea en clave y valor en el punto de separador"""
     sep = tokens['sep']

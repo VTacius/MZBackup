@@ -2,7 +2,7 @@
 # encoding: utf-8
 # vim: tabstop=4 : shiftwidth=4 : expandtab
 '''
-Funciones útiles de carácter general 
+Funciones útiles de carácter general
 O de caracter especifico que no quise poner en otra parte porque me hacía ver fea las clases que de por si no son tan guapas que digamos
 '''
 __author__ = "Alexander Ortiz"
@@ -18,7 +18,7 @@ import time
 from subprocess import STDOUT,PIPE,Popen
 from configuracion import configuracion
 
-# Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que 
+# Ejecutamos el fichero al inicio, con lo cual parece claramente garantiza que
 # leerá la configuración
 remoto = configuracion("remoto")
 dir_base = configuracion("dir_base")
@@ -51,18 +51,18 @@ def ejecutar_remoto(comando):
     orden = "'" + comando + "'"
     comando = ["ssh", "root@" + remoto, orden]
     ejecutar_comando(comando)
-    
+
 def enviante(origen, destino=str()):
     '''
     Por ahora, enviamos archivos con ssh, no queda de otra si es que queremos avanzar
-    El destino es opcional, tomará el directorio actual, comportamiento útil para 
+    El destino es opcional, tomará el directorio actual, comportamiento útil para
     los backup que listados que la mayoría de procesos crean.
     Por tanto, solo enviará ficheros regulares
     '''
     if origen == "*":
         # En este caso, usualmente será porque estamos enviando al mismo lugar
         localidad = os.getcwd()
-        archivos = [x for x in os.listdir(localidad) if os.path.isfile(x)] 
+        archivos = [x for x in os.listdir(localidad) if os.path.isfile(x)]
         # Pero mejor lo probamos que no perdemos mucho
         destino = destino if len(destino)>0 else localidad
         for archivo in archivos:
@@ -92,11 +92,11 @@ def situar_remoto():
 
 def situar_directorio(objeto, dirbase = ""):
     '''
-    Crear un directorio local para el objeto dado, incluye una marca de tiempo. 
+    Crear un directorio local para el objeto dado, incluye una marca de tiempo.
     Mueve las operaciones del script al directorio creado
     '''
     timestamp = time.strftime('%d-%m-%y-%H%M%S')
-    dirbase = dir_base if not dirbase else dirbase 
+    dirbase = dir_base if not dirbase else dirbase
     directorio = dirbase.rstrip("/") + "/" + objeto + "-" + timestamp
     try:
         os.mkdir(directorio)
@@ -122,7 +122,7 @@ def cadeneador(contenido, sep):
         final = "\n"
     else:
         final = ""
-    
+
     # Si el contenido no es cadena de texto, casi siempre será una lista que habrá que transformar tomando en cuenta
     # el separador final que se ha configurado en final
     if isinstance(contenido, str):
@@ -163,7 +163,7 @@ def abrir_listado(fichero):
 
 def abrir_json(archivo):
     '''
-    Se encarga de abrir ficheros en formato json 
+    Se encarga de abrir ficheros en formato json
     y retorna un diccionario con su contenido
     '''
     try:
@@ -188,19 +188,19 @@ def abrir_json(archivo):
 #    '''
 #    a = ['admin','galsync','spam']
 #    for e in a:
-#        cuenta = e + "@" + dominio	
+#        cuenta = e + "@" + dominio
 #        try:
 #            lista.remove(cuenta)
 #        except ValueError:
 #            pass
-	
+
 def borrar_patrones (listador):
     '''
     Borrar los usuarios de una lista, especificados en una expresión regular puesto
-    que así son producidos por las versiones más nuevas de zimbra 
+    que así son producidos por las versiones más nuevas de zimbra
     y rompe el bucle al encontrarlo, pues en realidad solo hay uno de estos
     '''
-    a = ['spam','ham','quarantine','virus-quarantine','galsync']    
+    a = ['spam','ham','quarantine','virus-quarantine','galsync']   
     for i in a:
         patron = "^(" + i + ")\..+@(\w+\.*){3}$"
         for j in listador:
@@ -211,8 +211,8 @@ def borrar_patrones (listador):
 
 def almacenar_diccionario(fichero, diccionario):
     '''
-    Almacena el diccionario cosId:cos que usaremos en el script usuario.py 
-    para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia 
+    Almacena el diccionario cosId:cos que usaremos en el script usuario.py
+    para poder asignar el cosId en el nuevo servidor, dado que el cosId cambia
     en el nuevo servidor, pero los datos del usuario almacenan el cosId
     '''
     datos = json.dumps(diccionario)

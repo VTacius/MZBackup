@@ -6,7 +6,8 @@ class TestInicializacionNuevo(TestCase):
     def test_fichero_nuevo_dict(self):
         from mzbackup.utils.pato import Pato
         pato = Pato('cos', '00-01-02', {'fichero': None, 'base': '/opt/backup'})
-        esperado = {'base': '/opt/backup/', 'directorio': 'cos-00-01-02/', 'archivo': 'cos', 'extension': ''}
+        esperado = {'base': '/opt/backup/', 'directorio': 'cos-00-01-02/',
+                    'archivo': 'cos', 'extension': ''}
         self.assertDictEqual(pato.__as_dict__(), esperado)
 
     def test_fichero_nuevo_cadena(self):
@@ -35,7 +36,8 @@ class TestInicializacionExistente(TestCase):
     def test_fichero_existente_dict(self):
         from mzbackup.utils.pato import Pato
         pato = Pato('cos', '00-01-02', {'fichero': self.fichero, 'base': '/opt/backup'})
-        esperado = {'base': '/home/', 'directorio': 'usuario/', 'archivo': 'README', 'extension': '.md'}
+        esperado = {'base': '/home/', 'directorio': 'usuario/',
+                    'archivo': 'README', 'extension': '.md'}
         self.assertDictEqual(pato.__as_dict__(), esperado)
 
     def test_fichero_existente_cadena(self):

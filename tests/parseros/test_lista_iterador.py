@@ -1,8 +1,9 @@
 from unittest import TestCase
 from unittest.mock import mock_open, patch
 
+
 class TestIteradorListas(TestCase):
-    
+
     def test_es_primera_linea(self):
         from mzbackup.parseros.listas import IteradorListas
         recolector = IteradorListas()
@@ -21,11 +22,11 @@ class TestIteradorListas(TestCase):
         from mzbackup.parseros.listas import IteradorListas
 
         contenido = mock_open(read_data=CASO_1)
-        
+
         with patch("builtins.open", contenido, create=True):
             fichero = open("NADA")
             recolector = IteradorListas()
-            recolector.configurar_contenido(fichero) 
+            recolector.configurar_contenido(fichero)
             resultado = ["FINAL" for linea in recolector if recolector.fin_objeto()]
             self.assertListEqual(resultado, ["FINAL"])
 
@@ -37,9 +38,10 @@ class TestIteradorListas(TestCase):
         with patch("builtins.open", contenido, create=True):
             fichero = open("NADA")
             recolector = IteradorListas()
-            recolector.configurar_contenido(fichero) 
+            recolector.configurar_contenido(fichero)
             resultado = ["FINAL" for linea in recolector if recolector.fin_objeto()]
             self.assertListEqual(resultado, ["FINAL"])
+
 
 CASO_1 = """
 # distributionList usi_dtic@salud.gob.sv memberCount=9
@@ -49,7 +51,7 @@ zimbraMailStatus: enabled
 members
 """
 
-CASO_2 ="""
+CASO_2 = """
 zimbraNotes: Yasmin del Carmen Jaime de Diaz
 
 members

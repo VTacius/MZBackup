@@ -3,8 +3,8 @@ from logging import getLogger
 
 from mzbackup.parseros.comun.recolector import Recolector
 from mzbackup.parseros.comun.iterador import IteradorFichero
-from mzbackup.utils.europa import Europa, guardar_contenido
 from mzbackup.parseros.comun.helpers import _crear_clave_valor
+from mzbackup.utils.europa import Europa, guardar_contenido
 
 log = getLogger('MZBackup')
 

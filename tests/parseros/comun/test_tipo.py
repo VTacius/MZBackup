@@ -24,6 +24,7 @@ email: loceron2008@gmail.com, lceron@dominio.com
 cn: Lorenzo Cerón Díaz
 """
 
+
 class TestTipo(TestCase):
 
     def test_obtener_tipo(self):
@@ -41,10 +42,11 @@ class TestTipo(TestCase):
         from mzbackup.parseros.comun.tipo import Tipo
 
         tipo = Tipo(atributos)
-        resultado = tipo.obtener_tipo('zimbraMailSieveScript: require ["fileinto", "reject", "tag", "flag"];')
+        linea = 'zimbraMailSieveScript: require ["fileinto", "reject", "tag", "flag"];'
+        resultado = tipo.obtener_tipo(linea)
 
-        esperado = {'tipo': "MULTILINEA", 'mlactivo': True, 'sep': 21, 
-                    'mlatributo': 'zimbraMailSieveScript', 'clave': '', 
+        esperado = {'tipo': "MULTILINEA", 'mlactivo': True, 'sep': 21,
+                    'mlatributo': 'zimbraMailSieveScript', 'clave': '',
                     'valor': 'require ["fileinto", "reject", "tag", "flag"];'}
 
         self.assertDictEqual(esperado, resultado)
@@ -56,8 +58,8 @@ class TestTipo(TestCase):
         tipo.obtener_tipo("zimbraMailSieveScript: allow")
         resultado = tipo.obtener_tipo("    filter {}")
 
-        esperado = {'tipo': "LINEA", 'mlactivo': True, 'sep': -1, 
-                    'mlatributo': 'zimbraMailSieveScript', 'clave': '', 
+        esperado = {'tipo': "LINEA", 'mlactivo': True, 'sep': -1,
+                    'mlatributo': 'zimbraMailSieveScript', 'clave': '',
                     'valor': ''}
 
         self.assertDictEqual(esperado, resultado)
@@ -73,10 +75,10 @@ class TestTipo(TestCase):
         tipo.obtener_tipo('  list) {')
         tipo.obtener_tipo('    fileinto "Flujo de actividad";')
         tipo.obtener_tipo('}')
-        
-        esperado = {'tipo': "ZIMBRA", 'mlactivo': False, 'sep': 28, 
+
+        esperado = {'tipo': "ZIMBRA", 'mlactivo': False, 'sep': 28,
                     'mlatributo': '', 'clave': 'zimbraMailSignatureMaxLength', 'valor': '10240'}
-        
+
         resultado = tipo.obtener_tipo("zimbraMailSignatureMaxLength: 10240")
         self.assertDictEqual(esperado, resultado)
 

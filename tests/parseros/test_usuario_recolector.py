@@ -25,9 +25,9 @@ class Recolector(TestCase):
     @mock.patch('mzbackup.parseros.usuarios.ParserUsuario')
     def test_es_ultima_linea(self, parser):
         europa = MockEuropa()
-        
+
         from mzbackup.parseros.usuarios import RecolectorUsuarios
-        
+
         recolector = RecolectorUsuarios(parser, {}, "/")
         recolector.configurar_destino(europa)
         recolector.agregar("")
@@ -40,33 +40,3 @@ class Recolector(TestCase):
         recolector = RecolectorUsuarios({}, {}, "/")
         resultado = recolector._es_primera_linea("#name vtacius@dominio.com")
         self.assertFalse(resultado)
-
-
-class RecolectorFuncional(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        archivo = open('tests/data/usuario/plural.data')
-        cls.contenido = archivo.readlines()
-        archivo.close()
-
-    @skip
-    @mock.patch('mzbackup.parseros.usuarios.ParserUsuario')
-    def test_lista_correctamente(self, parser):
-        europa = MockEuropa()
-        
-        from mzbackup.parseros.usuarios import RecolectorUsuarios
-        
-        recolector = RecolectorUsuarios(parser, {}, "/")
-        recolector.configurar_destino(europa)
-        total = 0
-        for linea in self.contenido:
-            recolector.agregar(linea)
-            if recolector.fin_de_contenido:
-                total += 1
-        else:
-            recolector.ultima_linea()
-            if recolector.fin_de_contenido:
-                total += 1
-
-        self.assertEqual(10, total)

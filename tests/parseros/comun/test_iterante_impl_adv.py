@@ -8,11 +8,12 @@ class TestDescribeFinalObjeto(TestCase):
     @classmethod
     def setUpClass(cls):
         from mzbackup.parseros.comun.iterador import IteradorFichero
+
         class Iterante(IteradorFichero):
-            
+
             def _linea_inicia_objeto(self, linea):
                 return linea == "INICIO"
-            
+
             def _describe_final_objeto(self):
                 """Ni siquiera del _linea_inicia_objeto de que lineas uses"""
                 return self.linea_actual == "CASI FIN" and self.linea_siguiente == "FIN"
@@ -21,15 +22,15 @@ class TestDescribeFinalObjeto(TestCase):
 
     def test_describe_final_objeto(self):
         contenido = mock_open(read_data=CONTENIDO_4.strip())
-        
+
         with patch("builtins.open", contenido, create=True):
             fichero = open("NADA")
             iterante = self.Iterador()
             iterante.configurar_contenido(fichero)
-            #resultado = [linea for linea in iterante if iterante.en_recoleccion]
+            # resultado = [linea for linea in iterante if iterante.en_recoleccion]
             resultado = [linea for linea in iterante if iterante.fin_objeto()]
-            
-            #self.assertEqual(resultado, ["TODO", "TODO"])
+
+            # self.assertEqual(resultado, ["TODO", "TODO"])
             self.assertEqual(resultado, ["CASI FIN"])
 
 
@@ -37,15 +38,16 @@ class TestIteranteImplementacionAvanzada(TestCase):
     @classmethod
     def setUpClass(cls):
         from mzbackup.parseros.comun.iterador import IteradorFichero
+
         class IterantePrueba(IteradorFichero):
 
             def _linea_inicia_objeto(self, linea):
                 return linea == "INICIO"
-            
+
             def _describe_final_objeto(self):
                 return self.linea_actual == "" and self.linea_siguiente == "members"
-        
-        cls.Iterador = IterantePrueba 
+
+        cls.Iterador = IterantePrueba
 
     def test_contenido_unico(self):
         contenido = mock_open(read_data=CONTENIDO_UNO.strip())
@@ -53,25 +55,25 @@ class TestIteranteImplementacionAvanzada(TestCase):
             fichero = open("NADA")
             iterante = self.Iterador()
             iterante.configurar_contenido(fichero)
-            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
+            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()]
             self.assertEqual(resultado, ["FINAL"])
-    
+
     def test_finaliza_una_vez(self):
         contenido = mock_open(read_data=CONTENIDO_DOS.strip())
         with patch("builtins.open", contenido, create=True):
             fichero = open("NADA")
             iterante = self.Iterador()
             iterante.configurar_contenido(fichero)
-            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
+            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()]
             self.assertEqual(resultado, ["FINAL"])
-    
+
     def test_finaliza_solo_con_recolecion(self):
         contenido = mock_open(read_data=CONTENIDO_TRES.strip())
         with patch("builtins.open", contenido, create=True):
             fichero = open("NADA")
             iterante = self.Iterador()
             iterante.configurar_contenido(fichero)
-            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()] 
+            resultado = ["FINAL" for linea in iterante if iterante.fin_objeto()]
             self.assertEqual(resultado, ["FINAL"])
 
 
@@ -115,3 +117,4 @@ FIN
 NADA
 NADA
 """
+

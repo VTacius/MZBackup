@@ -80,6 +80,7 @@ class Tipo:
             tipo = tipeador('MULTILINEA', True, self.clave, **tokens)
         else:
             if not (self._es_atributo_deprecated or self._es_atributo_sistema):
+                # TODO: En cuanto pongamos el log, pondŕe a testear esto
                 print("No reconozco la línea %s" % linea)
 
         # Guardamos el tipo actual como tipo anterior

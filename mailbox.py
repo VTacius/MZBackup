@@ -23,17 +23,17 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--listado', help='Fichero dominio.lst dentro de un directorio {{dir-base}}/usuarios-{{fecha}}')
     parser.add_argument('-e', '--envio', action='store_true', help='Envio el fichero de backup al servidor remoto')
     parser.add_argument('-u', '--usuarios', help='Lista de usuarios a los cuales ha de realizarse backup')
-    
+
     # Tomamos el valor de las opciones pasadas al fichero
     args = parser.parse_args()
     listado_dominios = args.listado
     listado_usuarios = args.usuarios
     ejecutar_envio = args.envio
-    
+
     # Me situo en el directorio base de trabajo configurado en mzbackup.ini
     titulador("Empezamos operaciones situándonos en el directorio base")
     situar_directorio("mailbox")
-    
+
     # Creamos directorio remoto donde almacenar los fichero
     if ejecutar_envio:
         titulador("Creamos el directorio remoto para enviar los datos")

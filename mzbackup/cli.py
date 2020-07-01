@@ -8,7 +8,7 @@ import traceback
 import click
 
 
-from mzbackup.parseros.parser import ParserError
+from mzbackup.parseros.comun.helpers import ParserError
 
 from mzbackup.parseros.usuarios import RecolectorUsuarios, EuropaUsuario, ParserUsuario
 from mzbackup.parseros.usuarios import atributos as usuarios_attrs

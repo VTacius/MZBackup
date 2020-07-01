@@ -5,8 +5,8 @@ from os import path
 
 from mzbackup.parseros.comun.recolector import Recolector
 from mzbackup.parseros.comun.iterador import IteradorFichero
+from mzbackup.parseros.comun.helpers import ParserError, _crear_clave_valor
 from mzbackup.utils.europa import Europa
-from mzbackup.parseros.comun.helpers import _crear_clave_valor
 
 log = getLogger('MZBackup')
 
@@ -77,7 +77,3 @@ class RecolectorCos(Recolector):
         # El ID es la nueva clave, el valor nuestro identificador global
         resultado = {valor: self.identificador}
         return clave, resultado
-
-
-class ParserError(Exception):
-    """Error personalizado para operaciones de Parseo"""

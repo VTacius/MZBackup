@@ -1,18 +1,17 @@
 from unittest import TestCase
-from unittest import mock
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 
 class TestIterante(TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         from mzbackup.parseros.comun.iterador import IteradorFichero
-        
+
         class IteradorPrueba(IteradorFichero):
             def _linea_inicia_objeto(self):
                 return False
-        cls.Iterador = IteradorPrueba 
+        cls.Iterador = IteradorPrueba
 
     def test_iterador_funciona(self):
         contenido = mock_open(read_data=CONTENIDO_UNO.strip())
@@ -23,7 +22,7 @@ class TestIterante(TestCase):
             resultado = [linea for linea in iterante]
 
             self.assertEqual(len(resultado), 3)
-    
+
     def test_iterador_contenido_correcto(self):
         contenido = mock_open(read_data=CONTENIDO_UNO.strip())
         with patch("builtins.open", contenido, create=True):

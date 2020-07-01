@@ -59,7 +59,7 @@ class Recolector(ABC):
     def configurar_contenido(self, contenido):
         """Permite configurar el archivo sobre el cual se trabaja"""
         self.iterador.configurar_contenido(contenido)
-    
+
     def procesar_contenido(self):
         """Itera sobre el contenido y procesa cada línea"""
         for linea in self.iterador:
