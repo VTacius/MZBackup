@@ -56,7 +56,8 @@ class TestGuardar(TestCase):
         cls.Europa = EuropaPrueba
         cls.Pato = PatoPrueba
 
-    def test_listado_ficheros(self):
+    @mock.patch("builtins.open")
+    def test_listado_ficheros(self, open):
         """Recuerda que, para evitar confusiones, lo mejor es que cada tipo configure a pato de
         acuerdo a sus necesidades.
         No se toma en cuenta procesal, por requerir una implementación en las subclases"""
@@ -70,3 +71,31 @@ class TestGuardar(TestCase):
         destino.guardar("objeto", contenido)
 
         self.assertEqual(destino.listar_archivos(), set(["objeto.cmd", "atributo.cmd", "attr.cmd"]))
+
+class TestGuardarMultilinea(TestCase):
+    """La operación para guardar los atributos multilínea a un fichero"""
+    @classmethod
+    def setUpClass(cls):
+        from mzbackup.utils.europa import Europa
+
+        class EuropaPrueba(Europa):
+            """Al parecer, tengo que implementar para testar"""
+
+            def _guardar_procesal(self, modificante, identificador, contenido):
+                return []
+
+        cls.Europa = EuropaPrueba
+
+
+    @mock.patch("mzbackup.utils.pato.Pato")
+    @mock.patch('mzbackup.utils.europa.guardar_contenido')
+    def test_guardar_multilinea(self, guardar, pato):
+        """La idea es comprobar que estamos creando bien los datos multilinea a guardar"""
+        guardar.side_effect = lambda pato, contenido: contenido
+        europa = self.Europa(pato, "ma")
+        
+        corpus = {"clave": ["Linea 1", "Linea 2"], "attr": ["Line 1", "Line 2"]}
+        resultado = europa._guardar_multilinea("ma", "alma", corpus)
+        esperado = ["zmprov ma alma clave Linea 1\\\nLinea 2", 
+                    "zmprov ma alma attr Line 1\\\nLine 2"]
+        self.assertCountEqual(resultado, esperado)

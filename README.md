@@ -97,8 +97,8 @@ rustup run nightly python setup.py build
 
 #### Linting
 ```sh
-pylama
-python -m pylama
+python -m pylint mzbackup
+python -m pylama mzbackup
 
 ```
 
@@ -106,6 +106,12 @@ python -m pylama
 Llamando a pytest como módulo agrega el actual path al SYSPATH (La cosa más genial del mundo si me lo preguntan)
 ```sh
 python -m pytest -v tests/
+```
+
+Para revisar el porcentaje de código testeado:
+```sh
+python -m coverage run --source=mzbackup -m pytest tests/
+python -m coverage report -m
 ```
 
 ### Instalacion

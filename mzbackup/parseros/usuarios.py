@@ -10,7 +10,7 @@ log = getLogger('MZBackup')
 
 atributos = {'posix': ['co', 'ou', 'street', 'ou', 'st', 'description', 'telephoneNumber', 'l',
                        'title', 'company', 'givenName', 'displayName', 'cn', 'sn', 'homePhone',
-                       'mobile', 'initials', 'o', 'ou', 'st'],
+                       'mobile', 'initials', 'o', 'ou', 'st', 'postalCode'],
              'sistema': ['mail', 'zimbraCreateTimestamp', 'zimbraMailDeliveryAddress',
                          'objectClass', 'uid', 'userPassword', 'zimbraId', 'zimbraMailAlias',
                          'zimbraLastLogonTimestamp'],
@@ -62,7 +62,7 @@ class IteradorUsuarios(IteradorFichero):
 class RecolectorUsuario(Recolector):
     """Implementa un Recolector para un fichero con contenido de USUARIOS"""
 
-    def __init__(self, tipo, iterador, datables):
+    def __init__(self, tipo, iterador, datables, **args):
         self.datables = datables
         Recolector.__init__(self, tipo, iterador)
 

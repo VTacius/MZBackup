@@ -17,7 +17,7 @@ def guardar_contenido(fichero, contenido):
 
 class Europa(ABC):
     """Base abstracta de Europa"""
-    def __init__(self, pato: Pato, modificante):
+    def __init__(self, pato: Pato, modificante: str):
         self.pato = pato
         self.archivos_creados = []
         self.modificante = modificante

@@ -99,4 +99,3 @@ class TestParser(TestCase):
         tokens = {'sep': 8}
         resultado = _crear_contenido_valido(tokens, "atributo: E$ta")
         self.assertEqual(resultado, " atributo 'E$ta'")
-

@@ -85,4 +85,3 @@ class TestHelperTipeador(TestCase):
                     'clave': None, 'valor': None}
 
         self.assertDictEqual(esperado, resultado)
-

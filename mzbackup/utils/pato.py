@@ -89,5 +89,6 @@ class Pato(BasePato):
         """Crea de ser necesario el directorio `base` para nuestro archivo"""
         config = self.__as_dict__()
         directorio = "{}{}".format(config['base'], config['directorio'])
-        if self.debe_crearse and not exists(directorio):
+        # Es que a veces, podríamos trabajar sobre un mismo directorio
+        if not exists(directorio):
             mkdir(directorio, 0o750)

@@ -3,6 +3,10 @@ from subprocess import Popen, PIPE
 from shlex import split
 
 
+class SistemLocalError(Exception):
+    """Error personalizado"""
+
+
 def _ejecutar(comando, guardar):
     error = None
     with Popen(comando, stdout=PIPE, stderr=PIPE, universal_newlines=True, shell=False) as cursor:
@@ -17,28 +21,41 @@ def _ejecutar(comando, guardar):
     return error
 
 
-def ejecutor(comando, salida=None):
-    """Prepara el objeto de salida de un comando"""
-    agregar = object()
-    es_contenido = False
+class EjecutorLocal:
+    """Ejecuta un comando en el sistema"""
 
-    if salida is None:
+    def __init__(self, comando):
+        self.comando = split(comando)
+
+    def obtener_resultado(self):
+        """Obtiene una lista de str con el resultado del comando"""
         salida = []
-        agregar = salida.append
-        es_contenido = True
-    elif isinstance(salida, str):
-        salida = open(salida, 'w+')
-        agregar = salida.write
-    else:
-        raise TypeError('Debe ser una cadena que especifique el nombre de fichero')
+        guardar = salida.append
 
-    try:
-        error = _ejecutar(split(comando), agregar)
-    except FileNotFoundError:
-        error = "Comando no encontrado"
+        error = None
+        try:
+            error = _ejecutar(self.comando, guardar)
+        except FileNotFoundError:
+            error = "Comando no encontrado"
 
-    if not es_contenido:
+        if error:
+            raise SistemLocalError(error)
+
+        return salida
+
+    def guardar_resultado(self, ruta_fichero_salida):
+        """Devuelve un fichero, abierto, con el resultado del comando"""
+        salida = open(str(ruta_fichero_salida), 'w+')
+        guardar = salida.write
+
+        error = None
+        try:
+            error = _ejecutar(self.comando, guardar)
+        except FileNotFoundError:
+            error = "Comando no encontrado"
+
         salida.close()
-        salida = []
+        if error:
+            raise SistemLocalError(error)
 
-    return salida, error
+        return open(str(ruta_fichero_salida))

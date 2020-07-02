@@ -1,4 +1,4 @@
-""" TODO: Implementación de Recolector y Parser para objeto COS"""
+""" Implementación de Recolector y Parser para objeto COS"""
 from logging import getLogger
 from json import load, dump
 from os import path

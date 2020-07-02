@@ -7,7 +7,7 @@ from mzbackup.parseros.comun.helpers import _crear_contenido_multilinea
 
 class Recolector(ABC):
     """Verdadero instrumento de todo el proyecto"""
-    def __init__(self, tipo, iterador):
+    def __init__(self, tipo, iterador, **args):
         self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
         self.identificador = None
         self.iterador = iterador
@@ -45,8 +45,7 @@ class Recolector(ABC):
             titulo = self._titulador(linea)
             self.resultado['comando'] = titulo
         elif self.iterador.fin_objeto():
-            self.europa.guardar("ma", self.resultado)
-            # Antes de reiniciar, es necesario guardar esto
+            self.europa.guardar(self.identificador, self.resultado)
             self.resultado = {'comando': "", 'multilinea': {}, 'procesal': {}}
             self.tipo.fin_contenido()
         else:
@@ -64,3 +63,7 @@ class Recolector(ABC):
         """Itera sobre el contenido y procesa cada línea"""
         for linea in self.iterador:
             self._procesa_linea(linea)
+
+    def listar_archivos(self):
+        """Devuelve la actual de archivos contenidos en Europa"""
+        return self.europa.listar_archivos()

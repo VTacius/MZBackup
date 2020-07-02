@@ -81,4 +81,3 @@ class TestTipo(TestCase):
 
         resultado = tipo.obtener_tipo("zimbraMailSignatureMaxLength: 10240")
         self.assertDictEqual(esperado, resultado)
-
