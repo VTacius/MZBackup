@@ -10,6 +10,7 @@ name = "mzbackup"
 crate-type = ["cdylib"]
 
 [dependencies]
+openssl = { version = "0.10", features = ["vendored"] }
 pyo3 = { version = "0.10.1"}
 ssh2 = "0.8"
 shellexpand = "2.0.0"

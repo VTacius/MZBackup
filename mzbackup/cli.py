@@ -1,5 +1,6 @@
 """Punto de entrada para MZBackup"""
 
+from collections import namedtuple
 from datetime import datetime
 from sys import exit as salida
 from json import loads
@@ -16,7 +17,6 @@ from mzbackup.instrumentos import enviar_remoto
 from mzbackup.instrumentos import ParserFactory
 from mzbackup.parseros.comun.helpers import ParserError
 from mzbackup.utils.comandos import SistemLocalError
-
 
 @click.group()
 def main():
@@ -43,22 +43,26 @@ def opciones(funcion):
     return funcion
 
 
-def operacion_principal(marca, nombre_objeto, comando, args, datos):
+ComponentesNombre = namedtuple(
+    "ComponentesNombre", ["timestamp", "base_fichero", "directorio_base"])
+
+def operacion_principal(nombre, tipo_objeto, comando, args, datos):
     """ Instrumentaliza todo el trabajo en un sólo lugar"""
     log = get_logger()
     debe_enviarse = args['envio']
     fichero = args['fichero']
 
-    pato = Pato(nombre_objeto, marca, args)
-    pato_remoto = PatoRemoto(nombre_objeto, marca, args['base'], args['remoto'])
-
-    recolector = object
-    if pato.debe_crearse:
-        recolector = ParserFactory.desde_comando(nombre_objeto, comando, pato, datos)
-    else:
-        recolector = ParserFactory.desde_fichero(nombre_objeto, fichero, pato, datos)
+    pato = Pato(nombre.base_fichero, nombre.timestamp, args)
+    pato_remoto = PatoRemoto(nombre.base_fichero, nombre.timestamp, nombre.directorio_base,
+                             args['remoto'])
 
     try:
+        recolector = object
+        if pato.debe_crearse:
+            recolector = ParserFactory.desde_comando(tipo_objeto, comando, pato, datos)
+        else:
+            recolector = ParserFactory.desde_fichero(tipo_objeto, fichero, pato, datos)
+
         log.info('Operacion Principal: Recolectando Información desde ficheros')
         recolector.procesar_contenido()
         ficheros_creados = recolector.listar_archivos()
@@ -84,8 +88,9 @@ def cos(**args):
     nombre_objeto = 'cos'
     comando = "zmprov gac -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
+    nombre = ComponentesNombre(marca, nombre_objeto, args['base'])
 
-    operacion_principal(marca, nombre_objeto, comando, args, {})
+    operacion_principal(nombre, nombre_objeto, comando, args, {})
 
 
 @main.command()
@@ -98,8 +103,9 @@ def listas(**args):
     nombre_objeto = 'listas'
     comando = "zmprov -l gadl -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
+    nombre = ComponentesNombre(marca, nombre_objeto, args['base'])
 
-    operacion_principal(marca, nombre_objeto, comando, args, {})
+    operacion_principal(nombre, nombre_objeto, comando, args, {})
 
 
 def listar_dominios():
@@ -130,9 +136,9 @@ def usuarios(**args):
     datos = {'datables': datables}
 
     for dominio in dominios:
+        nombre = ComponentesNombre(marca, dominio, args['base'])
         comando = "zmprov -l gaa -v {}".format(dominio)
-        # TODO: Necesita anexarse el nombre de dominio, ahora se esta reescribiendo
-        operacion_principal(marca, nombre_objeto, comando, args, datos)
+        operacion_principal(nombre, nombre_objeto, comando, args, datos)
 
 
 if __name__ == "__main__":
