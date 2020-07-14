@@ -1,7 +1,6 @@
 from unittest import TestCase
 from unittest import mock
 
-
 class TestTipeador(TestCase):
 
     def test_tipo_no_definido(self):
@@ -33,14 +32,14 @@ class TestCrearRecolector(TestCase):
 
 
 
-class TestCrearFicheroContenido(TestCase):
-
-    @mock.patch("mzbackup.instrumentos.EjecutorLocal")
-    @mock.patch("mzbackup.utils.pato.Pato")
-    def test_crear_fichero_contenido(self, Pato, ejecutor):
-        from mzbackup.instrumentos import crear_fichero_contenido
-        pato = Pato()
-        ejecutor.return_value.guardar_resultado = lambda pato: "fichero"
-        resultado = crear_fichero_contenido(pato, "inexistente -v")
-
-        self.assertEqual("fichero", resultado)
+#class TestCrearFicheroContenido(TestCase):
+#
+#    @mock.patch("mzbackup.instrumentos.EjecutorLocal")
+#    @mock.patch("mzbackup.utils.pato.Pato")
+#    def test_crear_fichero_contenido(self, Pato, ejecutor):
+#        from mzbackup.instrumentos import crear_fichero_contenido
+#        pato = Pato()
+#        ejecutor.return_value.guardar_resultado = lambda pato: "fichero"
+#        resultado = crear_fichero_contenido(pato, "inexistente -v")
+#
+#        self.assertEqual("fichero", resultado)

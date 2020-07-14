@@ -8,13 +8,13 @@ from json import loads
 import traceback
 import click
 
-from mzbackup.utils.pato import Pato, PatoRemoto
+from mzbackup.utils.pato import Pato, PatoFactory
 from mzbackup.utils.comandos import EjecutorLocal
 from mzbackup.utils.registro import configurar_log
 from mzbackup.utils.registro import get_logger
 
 from mzbackup.instrumentos import enviar_remoto
-from mzbackup.instrumentos import ParserFactory
+from mzbackup.instrumentos import crear_parser
 from mzbackup.parseros.comun.helpers import ParserError
 from mzbackup.utils.comandos import SistemLocalError
 
@@ -43,30 +43,20 @@ def opciones(funcion):
     return funcion
 
 
-ComponentesNombre = namedtuple(
-    "ComponentesNombre", ["timestamp", "base_fichero", "directorio_base"])
-
-def operacion_principal(nombre, tipo_objeto, comando, args, datos):
+def operacion_principal(pato, tipo_objeto, comando, args, datos):
     """ Instrumentaliza todo el trabajo en un sólo lugar"""
     log = get_logger()
     debe_enviarse = args['envio']
-    fichero = args['fichero']
 
-    pato = Pato(nombre.base_fichero, nombre.timestamp, args)
-    pato_remoto = PatoRemoto(nombre.base_fichero, nombre.timestamp, nombre.directorio_base,
-                             args['remoto'])
+    pato_remoto = PatoFactory.remoto_de_local(pato, args['remoto'])
 
     try:
-        recolector = object
-        if pato.debe_crearse:
-            recolector = ParserFactory.desde_comando(tipo_objeto, comando, pato, datos)
-        else:
-            recolector = ParserFactory.desde_fichero(tipo_objeto, fichero, pato, datos)
+        recolector = crear_parser(tipo_objeto, comando, pato, datos)
 
         log.info('Operacion Principal: Recolectando Información desde ficheros')
         recolector.procesar_contenido()
         ficheros_creados = recolector.listar_archivos()
-        # TODO: ¿Dónde esta el fichero con los datos?
+        # TODO: ¿Dónde esta el fichero con los datos? En pato.fichero debería estar el original
         enviar_remoto(debe_enviarse, pato_remoto, ficheros_creados)
     except ParserError as mistake:
         log.error(mistake)
@@ -88,9 +78,9 @@ def cos(**args):
     nombre_objeto = 'cos'
     comando = "zmprov gac -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
-    nombre = ComponentesNombre(marca, nombre_objeto, args['base'])
 
-    operacion_principal(nombre, nombre_objeto, comando, args, {})
+    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
+    operacion_principal(pato, nombre_objeto, comando, args, {})
 
 
 @main.command()
@@ -103,9 +93,9 @@ def listas(**args):
     nombre_objeto = 'listas'
     comando = "zmprov -l gadl -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
-    nombre = ComponentesNombre(marca, nombre_objeto, args['base'])
 
-    operacion_principal(nombre, nombre_objeto, comando, args, {})
+    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
+    operacion_principal(pato, nombre_objeto, comando, args, {})
 
 
 def listar_dominios():
@@ -135,10 +125,11 @@ def usuarios(**args):
     datables = {'zimbraCOSId': loads(contenido)}
     datos = {'datables': datables}
 
+    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
     for dominio in dominios:
-        nombre = ComponentesNombre(marca, dominio, args['base'])
         comando = "zmprov -l gaa -v {}".format(dominio)
-        operacion_principal(nombre, nombre_objeto, comando, args, datos)
+        pato.archivo = dominio
+        operacion_principal(pato, nombre_objeto, comando, args, datos)
 
 
 if __name__ == "__main__":

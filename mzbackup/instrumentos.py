@@ -1,6 +1,5 @@
 """Operaciones base a componerse en el script principal"""
 from mzbackup.utils.registro import get_logger
-from mzbackup.utils.comandos import EjecutorLocal
 from mzbackup.mzbackup import Ejecutor
 
 from mzbackup.parseros.comun.tipo import Tipo
@@ -42,44 +41,18 @@ def crear_recolector(objeto, pato, args):
     return recolector
 
 
-def crear_fichero_contenido(pato_local, comando):
-    """Crear el fichero con contenido proveniente de un comando, si es que no existe"""
-    pato_local.extension = "data"
-    log.debug("> Creando el fichero de datos %s", pato_local)
+def crear_parser(objeto, comando, pato, args):
+    """Crea un recolector desde comando"""
+    recolector = crear_recolector(objeto, pato, args)
 
-    ejecutor_local = EjecutorLocal(comando)
-    archivo = ejecutor_local.guardar_resultado(pato_local)
+    log.info('Operacion Principal: Habilitando directorios de salida')
+    pato.habilitar_directorio_local()
 
-    return archivo
+    log.info('Operacion Principal: Habilitando ficheros con contenido')
+    pato.habilitar_fichero_contenido(comando)
+    recolector.configurar_contenido(pato.fichero)
 
-
-class ParserFactory:
-    """Crear un Parser de contenido COS"""
-
-    @classmethod
-    def desde_comando(cls, objeto, comando, pato, args):
-        """Crea un recolector desde comando"""
-        recolector = crear_recolector(objeto, pato, args)
-
-        log.info('Operacion Principal: Habilitando directorios de salida')
-        pato.habilitar_directorio_local()
-
-        log.info('Operacion Principal: Habilitando ficheros con contenido')
-        contenido = crear_fichero_contenido(pato, comando)
-        recolector.configurar_contenido(contenido)
-
-        return recolector
-
-    @classmethod
-    def desde_fichero(cls, objeto, contenido, pato, args):
-        """Crea un recolector desde un fichero existente"""
-        recolector = crear_recolector(objeto, pato, args)
-
-        log.info('Operacion Principal: Habilitando ficheros con contenido')
-        recolector.configurar_contenido(contenido)
-
-        return recolector
-
+    return recolector
 
 def enviar_remoto(debe_enviarse, pato, ficheros):
     """Se instrumentaliza el envío de ficheros al servidor remoto"""

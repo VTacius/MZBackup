@@ -13,12 +13,12 @@ class TestAtributosDisponibles(TestCase):
 
     def test_cambio_extension_fichero_nuevo(self):
         from mzbackup.utils.pato import Pato
-        pato = Pato({}, {}, {'fichero': self.fichero})
+        pato = Pato({}, {}, self.fichero, {})
         pato.extension = "mkv"
         self.assertEqual(str(pato), "/home/usuario/README.mkv")
 
     def test_cambio_extension_fichero_existente(self):
         from mzbackup.utils.pato import Pato
-        pato = Pato('cos', '13-12-11', {'fichero': None, 'base': '/opt/backup'})
+        pato = Pato('cos', '13-12-11',  None, '/opt/backup')
         pato.extension = "mkv"
         self.assertEqual(str(pato), "/opt/backup/cos-13-12-11/cos.mkv")

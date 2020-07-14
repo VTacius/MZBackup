@@ -5,6 +5,10 @@ from os.path import split
 from os.path import exists
 from os import mkdir
 
+from mzbackup.utils.comandos import EjecutorLocal
+from mzbackup.utils.registro import get_logger
+log = get_logger()
+
 
 def _analizar_ruta_nueva(objeto, marca, base):
     directorio = "{}-{}".format(objeto, marca)
@@ -29,16 +33,57 @@ class BasePato:
     """Establece los atributos bases y sus representaciones"""
     def __init__(self, base, directorio, archivo, extension):
         self.base = base
-        self.directorio = directorio
-        self.archivo = archivo
-        self.extension = extension
+        self._directorio = directorio
+        self._archivo = archivo
+        self._extension = extension
+
+    @property
+    def extension(self):
+        """La extensión que ha de tener el archivo"""
+        if len(self._extension) > 0:
+            return "." + self._extension
+        return ""
+
+    @extension.setter
+    def extension(self, extension):
+        self._extension = extension
+
+    @property
+    def archivo(self):
+        """El nombre del archivo"""
+        if len(self._archivo) > 0:
+            return self._archivo
+        return ""
+
+    @archivo.setter
+    def archivo(self, archivo):
+        self._archivo = archivo
+
+    @property
+    def directorio(self):
+        """El directorio según tipo y fecha"""
+        if len(self._directorio) > 0:
+            return self._directorio.rstrip("/") + "/"
+        return ""
+
+    @directorio.setter
+    def directorio(self, directorio):
+        self._directorio = directorio
+
+    @property
+    def base(self):
+        """El directorio base sobre el que se construyen los directorios por tipo y fecha"""
+        if len(self._base) > 0:
+            return self._base.rstrip("/") + "/"
+        return ""
+
+    @base.setter
+    def base(self, base):
+        self._base = base
 
     def __as_dict__(self):
-        base = self.base + "/" if len(self.base) > 0 else ""
-        directorio = self.directorio + "/" if len(self.directorio) > 0 else ""
-        archivo = self.archivo if len(self.archivo) > 0 else ""
-        extension = "." + self.extension if len(self.extension) > 0 else ""
-        return {'base': base, 'directorio': directorio, 'archivo': archivo, 'extension': extension}
+        return {'base': self.base, 'directorio': self.directorio,
+                'archivo': self.archivo, 'extension': self.extension}
 
     def __str__(self):
         config = self.__as_dict__()
@@ -47,36 +92,29 @@ class BasePato:
 
     def ruta(self):
         """Devuelve la ruta a un fichero completa"""
-        config = self.__as_dict__()
-        return "{}{}".format(config['base'], config['directorio'])
+        return "{}{}".format(self.base, self.directorio)
 
     def nombre(self):
         """Devuelve el nombre del fichero"""
-        config = self.__as_dict__()
-        return "{}{}".format(config['archivo'], config['extension'])
+        return "{}{}".format(self.archivo, self.extension)
 
 
 class PatoRemoto(BasePato):
     """Pese a lo que sugiere su nombre, es una clase base con algunas de las funcionalidades
     base para otras posibles"""
 
-    def __init__(self, objeto, marca, base, servidor_remoto):
+    def __init__(self, pato_local, servidor_remoto):
         self.servidor_remoto = servidor_remoto
-        base, directorio, archivo, extension = _analizar_ruta_nueva(objeto, marca, base)
+        base, directorio, archivo, extension = _analizar_ruta_existente(str(pato_local))
         BasePato.__init__(self, base, directorio, archivo, extension)
 
 
 class Pato(BasePato):
     """Establece funcionalidades adicionales para la manipulacion de rutas"""
-    def __init__(self, objeto, marca, args):
-        self.objeto = objeto
-        self.marca = marca
-        self.fichero = args['fichero']
-        ruta = getattr(args['fichero'], 'name', None)
+    def __init__(self, objeto, marca, fichero, base):
+        ruta = getattr(fichero, 'name', None)
+        self.fichero = fichero
         self.debe_crearse = ruta is None
-
-        # Por venir de Click, podemos asumir que habrá un valor por defecto
-        base = args.get('base')
 
         if self.debe_crearse:
             base, directorio, archivo, extension = _analizar_ruta_nueva(objeto, marca, base)
@@ -92,3 +130,21 @@ class Pato(BasePato):
         # Es que a veces, podríamos trabajar sobre un mismo directorio
         if not exists(directorio):
             mkdir(directorio, 0o750)
+
+    def habilitar_fichero_contenido(self, comando):
+        """Crear el fichero con contenido proveniente de un comando, si es que no existe"""
+        self.extension = "data"
+        log.debug("> Creando el fichero de datos %s", self.__str__())
+
+        if self.debe_crearse:
+            ejecutor_local = EjecutorLocal(comando)
+            self.fichero = ejecutor_local.guardar_resultado(self.__str__())
+
+
+class PatoFactory:
+    """Helper para crear la clase Pato"""
+
+    @classmethod
+    def remoto_de_local(cls, pato_local, servidor_remoto):
+        """Crea un PatoRemoto a partir de los datos de PatoLocal"""
+        return PatoRemoto(pato_local, servidor_remoto)
