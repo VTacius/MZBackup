@@ -2,18 +2,19 @@
 
 from queue import Queue
 from threading import Thread
-from logging import getLogger
 
-from mzbackup.utils.comandos import ejecutor
+from mzbackup.utils.pato import PatoLocal
+from mzbackup.utils.registro import get_logger
+from mzbackup.utils.comandos import EjecutorLocal
 
-log = getLogger('MZBackup')
-
+log = get_logger()
 
 class Respaldo(Thread):
     """Crea el respaldo para cada usuario en cola"""
 
-    def __init__(self, pato, cola: Queue, cola_envio: Queue):
+    def __init__(self, pato: PatoLocal, cola: Queue, cola_envio: Queue):
         Thread.__init__(self)
+        pato.extension = "tgz"
         self.pato = pato
         self.cola = cola
         self.cola_envio = cola_envio
@@ -22,12 +23,15 @@ class Respaldo(Thread):
         """Código a ejecutar"""
         while True:
             usuario = self.cola.get()
-            log.debug("Creando backup para %s" % usuario)
-            archivo = "{0}/{1}.tgz".format(self.pato, usuario.replace("@", "AT"))
-            comando = "zmmailbox -z -m {0} getRestURL -o {1} '/?fmt=tgz'".format(usuario, archivo)
-            log.trace("Creando fichero %s para %s en %s" % (archivo, usuario, self.getName()))
-            salida, error = ejecutor(comando)
-            if self.cola_envio and error is None:
-                self.cola_envio.put(archivo)
+            self.pato.archivo = usuario.replace('@', 'AT')
+
+            log.debug("Creando backup para %s" % (usuario))
+            comando = "zmmailbox -z -m {0} getRestURL -o {1} '/?fmt=tgz'".format(usuario, self.pato)
+            log.trace("Creando fichero %s para %s en %s" % (self.pato, usuario, self.getName()))
+            print(comando)
+            ejecutor = EjecutorLocal(comando)
+            salida = ejecutor.obtener_resultado()
+            if self.cola_envio:
+                self.cola_envio.put(str(self.pato))
 
             self.cola.task_done()

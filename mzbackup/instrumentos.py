@@ -1,4 +1,7 @@
 """Operaciones base a componerse en el script principal"""
+from collections import namedtuple
+
+from mzbackup.utils.comandos import EjecutorLocal
 from mzbackup.utils.registro import get_logger
 from mzbackup.mzbackup import Ejecutor
 
@@ -15,6 +18,14 @@ from mzbackup.parseros.listas import EuropaLista
 
 
 log = get_logger()
+
+
+def listar_dominios():
+    """Consigue los dominios disponibles para el sistema"""
+    comando = "zmprov gad"
+    ejecutor_local = EjecutorLocal(comando)
+    resultado = ejecutor_local.obtener_resultado()
+    return [x.strip() for x in resultado]
 
 
 def tipeador(objeto):

@@ -1,7 +1,7 @@
 """Se ocupa de almacenar cosas, como el almacén"""
 from abc import abstractmethod, ABC
 from mzbackup.utils.registro import get_logger
-from mzbackup.utils.pato import Pato
+from mzbackup.utils.pato import PatoLocal
 
 log = get_logger()
 
@@ -17,7 +17,7 @@ def guardar_contenido(fichero, contenido):
 
 class Europa(ABC):
     """Base abstracta de Europa"""
-    def __init__(self, pato: Pato, modificante: str):
+    def __init__(self, pato: PatoLocal, modificante: str):
         self.pato = pato
         self.archivos_creados = []
         self.modificante = modificante

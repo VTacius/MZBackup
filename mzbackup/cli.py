@@ -1,6 +1,5 @@
 """Punto de entrada para MZBackup"""
 
-from collections import namedtuple
 from datetime import datetime
 from sys import exit as salida
 from json import loads
@@ -8,11 +7,11 @@ from json import loads
 import traceback
 import click
 
-from mzbackup.utils.pato import Pato, PatoFactory
-from mzbackup.utils.comandos import EjecutorLocal
+from mzbackup.utils.pato import PatoFactory
 from mzbackup.utils.registro import configurar_log
 from mzbackup.utils.registro import get_logger
 
+from mzbackup.instrumentos import listar_dominios
 from mzbackup.instrumentos import enviar_remoto
 from mzbackup.instrumentos import crear_parser
 from mzbackup.parseros.comun.helpers import ParserError
@@ -79,7 +78,7 @@ def cos(**args):
     comando = "zmprov gac -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
 
-    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
+    pato = PatoFactory.crear_pato_local(nombre_objeto, marca, args['base'], args['fichero'])
     operacion_principal(pato, nombre_objeto, comando, args, {})
 
 
@@ -94,16 +93,8 @@ def listas(**args):
     comando = "zmprov -l gadl -v"
     marca = datetime.now().strftime('%y-%m-%d-%H%M%S')
 
-    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
+    pato = PatoFactory.crear_pato_local(nombre_objeto, marca, args['base'], args['fichero'])
     operacion_principal(pato, nombre_objeto, comando, args, {})
-
-
-def listar_dominios():
-    """Consigue los dominios disponibles para el sistema"""
-    comando = "zmprov gad"
-    ejecutor_local = EjecutorLocal(comando)
-    resultado = ejecutor_local.obtener_resultado()
-    return [x.strip() for x in resultado]
 
 
 @main.command()
@@ -125,7 +116,7 @@ def usuarios(**args):
     datables = {'zimbraCOSId': loads(contenido)}
     datos = {'datables': datables}
 
-    pato = Pato(nombre_objeto, marca, args['fichero'], args['base'])
+    pato = PatoFactory.crear_pato_local(nombre_objeto, marca, args['base'], args['fichero'])
     for dominio in dominios:
         comando = "zmprov -l gaa -v {}".format(dominio)
         pato.archivo = dominio

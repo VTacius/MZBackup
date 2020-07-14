@@ -87,7 +87,7 @@ class TestGuardarMultilinea(TestCase):
         cls.Europa = EuropaPrueba
 
 
-    @mock.patch("mzbackup.utils.pato.Pato")
+    @mock.patch("mzbackup.utils.pato.PatoLocal")
     @mock.patch('mzbackup.utils.europa.guardar_contenido')
     def test_guardar_multilinea(self, guardar, pato):
         """La idea es comprobar que estamos creando bien los datos multilinea a guardar"""

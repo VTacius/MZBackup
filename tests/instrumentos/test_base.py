@@ -11,7 +11,7 @@ class TestTipeador(TestCase):
 
 class TestCrearRecolector(TestCase):
 
-    @mock.patch("mzbackup.utils.pato.Pato")
+    @mock.patch("mzbackup.utils.pato.PatoLocal")
     def test_creacion_asigna_contenido(self, Pato):
         from mzbackup.instrumentos import crear_recolector
         from mzbackup.utils.europa import Europa
@@ -20,7 +20,7 @@ class TestCrearRecolector(TestCase):
 
         self.assertIsInstance(resultado.europa, Europa)
     
-    @mock.patch("mzbackup.utils.pato.Pato")
+    @mock.patch("mzbackup.utils.pato.PatoLocal")
     def test_creacion_asigna_datables(self, Pato):
         from mzbackup.instrumentos import crear_recolector
         from mzbackup.utils.europa import Europa

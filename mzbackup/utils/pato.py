@@ -109,17 +109,11 @@ class PatoRemoto(BasePato):
         BasePato.__init__(self, base, directorio, archivo, extension)
 
 
-class Pato(BasePato):
+class PatoLocal(BasePato):
     """Establece funcionalidades adicionales para la manipulacion de rutas"""
-    def __init__(self, objeto, marca, fichero, base):
-        ruta = getattr(fichero, 'name', None)
-        self.fichero = fichero
-        self.debe_crearse = ruta is None
-
-        if self.debe_crearse:
-            base, directorio, archivo, extension = _analizar_ruta_nueva(objeto, marca, base)
-        else:
-            base, directorio, archivo, extension = _analizar_ruta_existente(ruta)
+    def __init__(self, base, directorio, archivo, extension):
+        self.fichero = None
+        self.debe_crearse = False
 
         BasePato.__init__(self, base, directorio, archivo, extension)
 
@@ -143,6 +137,32 @@ class Pato(BasePato):
 
 class PatoFactory:
     """Helper para crear la clase Pato"""
+    @classmethod
+    def crear_pato_local(cls, nombre, marca, base, fichero):
+        """Crea un pato según como vea la situación"""
+        nombre_fichero = getattr(fichero, 'name', None)
+        if nombre_fichero is None:
+            return cls.local_de_componentes(nombre, marca, base)
+        return  cls.local_de_fichero_existente(nombre_fichero)
+
+    @classmethod
+    def local_de_fichero_existente(cls, fichero):
+        """Crea un pato a partir de un fichero existente"""
+        base, directorio, archivo, extension = _analizar_ruta_existente(fichero)
+        pato = PatoLocal(base, directorio, archivo, extension)
+        pato.fichero = fichero
+
+        return pato
+
+    @classmethod
+    def local_de_componentes(cls, objeto, marca, base):
+        """Crea un PatoBase, considerado nuevo, a partir de un par de componentes"""
+        base, directorio, archivo, extension = _analizar_ruta_nueva(objeto, marca, base)
+
+        pato = PatoLocal(base, directorio, archivo, extension)
+        pato.debe_crearse = True
+
+        return pato
 
     @classmethod
     def remoto_de_local(cls, pato_local, servidor_remoto):
